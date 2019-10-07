@@ -228,6 +228,8 @@ def generate_initial_distribution_from_tomo_manual_Twiss(parameters, TwissDict, 
 	closedOrbitx = {'x0': parameters['x0'], 'xp0': parameters['xp0']} 
 	closedOrbity = {'y0': parameters['y0'], 'yp0': parameters['yp0']} 
 
+	print dispersionx
+
 	# Initialize empty particle arrays
 	x = np.zeros(parameters['n_macroparticles'])
 	xp = np.zeros(parameters['n_macroparticles'])
@@ -274,9 +276,9 @@ def generate_initial_distribution_from_tomo_manual_Twiss(parameters, TwissDict, 
 				dpp = dE[i] / (parameters['energy']) / parameters['beta']**2 * 1E9
 				#print '\n dpp = ', dpp
 				x[i] += dpp * dispersionx['etax0']
-				xp[i] += dpp * dispersionx['etapx0']	
+				xp[i] += dpp * dispersionx['etapx0']
 				y[i] += dpp * dispersiony['etay0']
-				yp[i] += dpp * dispersiony['etapy0']	
+				yp[i] += dpp * dispersiony['etapy0']
 				
 				# ~ if outputFormat == 'Orbit':
 				x[i] *= 1000.
@@ -326,6 +328,8 @@ def generate_initial_distribution_from_tomo(parameters, matfile=0, Lattice=None,
 	dispersiony = {'etay0': parameters['etay0'], 'etapy0': parameters['etapy0']}
 	closedOrbitx = {'x0': parameters['x0'], 'xp0': parameters['xp0']} 
 	closedOrbity = {'y0': parameters['y0'], 'yp0': parameters['yp0']} 
+	
+	print dispersionx
 
 	# Initialize empty particle arrays
 	x = np.zeros(parameters['n_macroparticles'])
@@ -423,6 +427,8 @@ def generate_initial_distribution_dispersion_mismatch(parameters, Lattice, misma
 	dispersiony = {'etay0': parameters['etay0'], 'etapy0': parameters['etapy0']}
 	closedOrbitx = {'x0': parameters['x0'], 'xp0': parameters['xp0']} 
 	closedOrbity = {'y0': parameters['y0'], 'yp0': parameters['yp0']} 
+	
+	print dispersionx
 
 	# initialize particle arrays
 	x = np.zeros(parameters['n_macroparticles'])
@@ -498,6 +504,8 @@ def generate_initial_distribution(parameters, Lattice,output_file = 'Input/Parti
 	# ~ dispersiony = {'etay0': parameters['etay0'], 'etapy0': parameters['etapy0']}
 	closedOrbitx = {'x0': parameters['x0'], 'xp0': parameters['xp0']} 
 	closedOrbity = {'y0': parameters['y0'], 'yp0': parameters['yp0']} 
+	
+	print dispersionx
 
 	# initialize particle arrays
 	x = np.zeros(parameters['n_macroparticles'])
@@ -633,6 +641,8 @@ def generate_initial_distribution_3DGaussian(parameters, Lattice, output_file = 
 	dispersiony = {'etay0': parameters['etay0'], 'etapy0': parameters['etapy0']}
 	closedOrbitx = {'x0': parameters['x0'], 'xp0': parameters['xp0']} 
 	closedOrbity = {'y0': parameters['y0'], 'yp0': parameters['yp0']} 
+	
+	print dispersionx
 
 	# initialize particle arrays
 	x = np.zeros(parameters['n_macroparticles'])
