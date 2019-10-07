@@ -365,6 +365,7 @@ for turn in range(sts['turn']+1, sts['turns_max']):
 		output.addParameter('cumulative_time', lambda: (time.time() - start_time))
 		start_time = time.time()
 		print 'start time = ', start_time
+		output.update()
 
 	Lattice.trackBunch(bunch, paramsDict)
 	bunchtwissanalysis.analyzeBunch(bunch)  # analyze twiss and emittance
