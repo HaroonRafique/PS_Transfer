@@ -356,23 +356,15 @@ print '\nTracking on MPI process: ', rank
 start_time = time.time()
 last_time = time.time()
 
-turn = -1
-output.addParameter('turn_time', lambda: time.strftime("%H:%M:%S"))
-output.addParameter('turn_duration', lambda: (time.time() - last_time))
-output.addParameter('cumulative_time', lambda: (time.time() - start_time))
-start_time = time.time()
-output.update()
-print 'start time = ', start_time
-
 for turn in range(sts['turn']+1, sts['turns_max']):
 	if not rank:	last_time = time.time()
 
-	# ~ if turn == 0:
-		# ~ output.addParameter('turn_time', lambda: time.strftime("%H:%M:%S"))
-		# ~ output.addParameter('turn_duration', lambda: (time.time() - last_time))
-		# ~ output.addParameter('cumulative_time', lambda: (time.time() - start_time))
-		# ~ start_time = time.time()
-		# ~ print 'start time = ', start_time
+	if turn == 0:
+		output.addParameter('turn_time', lambda: time.strftime("%H:%M:%S"))
+		output.addParameter('turn_duration', lambda: (time.time() - last_time))
+		output.addParameter('cumulative_time', lambda: (time.time() - start_time))
+		start_time = time.time()
+		print 'start time = ', start_time
 
 	Lattice.trackBunch(bunch, paramsDict)
 	bunchtwissanalysis.analyzeBunch(bunch)  # analyze twiss and emittance
