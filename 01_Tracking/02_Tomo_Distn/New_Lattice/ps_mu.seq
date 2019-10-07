@@ -1,0 +1,990 @@
+/**********************************************************************************
+* PLACEHOLDERS: 
+* NOTE: reference to CDS note to be written to summarize changes
+* TODO: at each occurrence an action still has to be done
+************************************************************************************/
+
+/**********************************************************************************
+*
+* Elements description and sequence file for each PS main unit (MU).
+*
+* Summary of changes with respect to previous versions available at NOTE
+*
+* 11/06/2019 - Alexander Huschauer
+************************************************************************************/
+
+
+/************************************************************************************
+*
+*         DEFINITION OF FOCUSING AND DEFOCUSING HALF-UNITS OF THE MU               
+*
+*************************************************************************************/
+
+/************************************************************************************
+*        							 F HALF-UNITS     					            
+*************************************************************************************/
+
+LF   = +2.1260;				! iron length of F half-unit
+DLF := +0.0715925;          ! theoretical bending length correction; value has been rounded on drawing PS_LM___0013 (MU01 assembly) to 0.0716 m
+L_F = LF + DLF;				! total magnetic length
+
+! yoke inside
+ANGLE_F := 0.03135884818;  	! angle calculated according to EQ.? in NOTE
+K1_F := +0.05872278;		! TODO: quadrupole gradient to be rematched for the bare machine
+K2_F :=  0.0;				! to be potentially used instead of allocating the PFW sextupole to multipoles
+
+/************************************************************************************
+*        							 D HALF-UNITS     					            
+*************************************************************************************/
+
+LD   = +2.1340;          	! iron length of D half-unit
+DLD := +0.0715925;          ! theoretical bending length correction; value has been rounded on drawing PS_LM___0013 (MU01 assembly) to 0.0716 m
+L_D = LD + DLD;				! total magnetic length
+
+! yoke inside
+ANGLE_D := 0.03147300489;  	! angle calculated according to EQ.? in (CDS NOTE)
+K1_D := -0.05872278;		! TODO: quadrupole gradient to be rematched for the bare machine
+K2_D :=  0.0;				! to be potentially used instead of allocating the PFW sextupole to multipoles
+
+/************************************************************************************
+*
+*        MULTIPOLES INSIDE THE MAIN UNITS REPRESENTING THE POLE FACE WINDINGS               
+*		 (TODO: explanation for new multipole description to be added in NOTE)
+*
+*************************************************************************************/
+
+! TODO: discuss whether inside or outside yoke description should still be retained
+! ideally, information from the magnetic model to be incorporated here
+! TODO: explain disappearance of the junction, being replaced by only a MULTIPOLE
+
+MP_F: MULTIPOLE, knl := {0, 0, MPK2, MPK3_F, MPK4_F, MPK5_F};
+MP_J: MULTIPOLE, knl := {0, 0, MPK2_J, 0, MPK4_J, MPK5_J};
+MP_D: MULTIPOLE, knl := {0, 0, MPK2, MPK3_D, MPK4_D, MPK5_D};
+
+/************************************************************************************
+*
+*     DEFINITION OF HORIZONTAL ORBIT CORRECTORS REPRESENTING THE BACKLEG WINDINGS               
+*
+*************************************************************************************/
+
+! In reality each DHZ corresponds to a cable around the yoke of two adjacent MUs. 
+! For example, PR.DHZXX provides a correction along MU(XX-1) and MUXX.
+! In this model, the effect of each PR.DHZXX is represented by kicks at the location 
+! of the juntion of MU(XX-1) and MUXX.
+
+DHZ  : HKICKER  , L := 0;
+
+/************************************************************************************
+*
+*         						DEFINITION OF EACH MU               
+*
+*************************************************************************************/
+
+!R          ! D-F unit, yoke outside
+!S          ! F-D unit, yoke outside
+!T          ! F-D unit, yoke inside
+!U          ! D-F unit, yoke inside
+
+MU_L = L_F + L_D;		! Total magnetic length of one MU
+PR.BH.F: SBEND, L = L_F, ANGLE := ANGLE_F, K1 := K1_F, K2 := K2_F;
+PR.BH.D: SBEND, L = L_D, ANGLE := ANGLE_D, K1 := K1_D, K2 := K2_D;
+
+PR.BHT01: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ01.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU02: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ03.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT03: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ03.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR04: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ05.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT05: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ05.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR06: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ07.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS07: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ07.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR08: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ09.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT09: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ09.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR10: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ11.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS11: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ11.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR12: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ13.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS13: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ13.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU14: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ15.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT15: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ15.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU16: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ17.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT17: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ17.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU18: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ19.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS19: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ19.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR20: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ21.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT21: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ21.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR22: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ23.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT23: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ23.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU24: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ25.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT25: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ25.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR26: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ27.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS27: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ27.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU28: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ29.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT29: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ29.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR30: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ31.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT31: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ31.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR32: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ33.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS33: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ33.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR34: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ35.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT35: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ35.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR36: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ37.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT37: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ37.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR38: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ39.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT39: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ39.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU40: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ41.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT41: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ41.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR42: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ43.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT43: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ43.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR44: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ45.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT45: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ45.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR46: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ47.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS47: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ47.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR48: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ49.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT49: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ49.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR50: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ51.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT51: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ51.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR52: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ53.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS53: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ53.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR54: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ55.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT55: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ55.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU56: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ57.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT57: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ57.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU58: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ59.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT59: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ59.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU60: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ61.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT61: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ61.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU62: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ63.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT63: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ63.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU64: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ65.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT65: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ65.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR66: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ67.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS67: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ67.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU68: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ69.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT69: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ69.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR70: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ71.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT71: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ71.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR72: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ73.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS73: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ73.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU74: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ75.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT75: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ75.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR76: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ77.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT77: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ77.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR78: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ79.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS79: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ79.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR80: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ81.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT81: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ81.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR82: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ83.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS83: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ83.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR84: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ85.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT85: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ85.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR86: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ87.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS87: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ87.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHU88: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ89.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT89: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ89.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR90: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ91.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT91: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ91.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR92: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ93.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS93: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ93.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR94: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ95.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT95: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ95.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR96: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ97.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHT97: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ97.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR98: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ99.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHS99: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_F,    AT = 0.0;
+ PR.BH.F, AT = L_F/2;
+ MP_J,    AT = L_F;
+ PR.DHZ99.B: DHZ,  AT = L_F;
+ PR.BH.D, AT = L_F + L_D/2;
+ MP_D,    AT = MU_L;
+ENDSEQUENCE;
+
+PR.BHR00: SEQUENCE, refer = CENTRE,  L = MU_L;
+ MP_D,    AT = 0.0;
+ PR.BH.D, AT = L_D/2;
+ MP_J,    AT = L_D;
+ PR.DHZ01.A: DHZ,  AT = L_D;
+ PR.BH.F, AT = L_D + L_F/2;
+ MP_F,    AT = MU_L;
+ENDSEQUENCE;
