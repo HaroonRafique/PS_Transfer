@@ -21,9 +21,9 @@ clean_all = True		# Clean simulation folder before running (False when resuming 
 # ~ queue = 'inf-long', 'inf-short', 'batch-long', 'batch-short'
 queue = 'inf-short'
 
-n_nodes = 4
+n_nodes = 2
 
-jobname = 'PS_00'
+jobname = 'PT_01_00'
 
 path_to_simulation = os.path.dirname(os.path.realpath(__file__)) # This directory
 
