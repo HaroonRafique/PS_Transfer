@@ -64,7 +64,7 @@ ptc_end;
  * Using model=2, exact=true is recommended.
  **********************************************************************/
 tune_x = 0.21;
-tune_y = 0.10;
+tune_y = 0.24;
  
 ptc_twiss_tune_macro_false_split: macro={
   ptc_create_universe;
