@@ -52,6 +52,7 @@ TransverseCut = 5		# Used for some distributions (matched)
 parameters = {
 	'intensity': intensity,
 	'gamma': gamma,
+	'blength_rms': sig_z,
 	'bunch_length': blength,
 	'epsn_x': epsn_x,
 	'epsn_y': epsn_y,
