@@ -672,14 +672,14 @@ def generate_initial_distribution_3DGaussian(parameters, Lattice, output_file = 
 			while outside_limits_E:
 				dE[i] = random.gauss(0., sig_E)	# Energy in eV
 				if abs(dE[i]) < (5*sig_E):
-					print '\n\tdE = ', dE[i]
+					# ~ print '\n\tdE = ', dE[i]
 					outside_limits_E = False
 			
 			outside_limits_z = True			
 			while outside_limits_z:
 				z_temp = random.gauss(0., parameters['blength_rms'])
 				if abs(z_temp) < (5*parameters['blength_rms']):			
-					print '\n\tz_temp = ', z_temp		
+					# ~ print '\n\tz_temp = ', z_temp		
 					phi[i] = - z_temp * h_main / R 
 					outside_limits_z = False
 							
