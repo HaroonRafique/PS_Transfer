@@ -388,10 +388,14 @@ for turn in range(sts['turn']+1, sts['turns_max']):
 	# ~ print '\t computeBunchMoments on MPI process: ', rank
 	# ~ bunchtwissanalysis.computeBunchMoments(bunch, 3, 1, 1)
 
+
+	print '\t Update pickle turns in turn ', turn, ' on MPI process: ', rank
 	if turn in sts['turns_update']:	sts['turn'] = turn
 
+	print '\t output.update() in turn ', turn, ' on MPI process: ', rank
 	output.update()
 
+	print '\t Print files in turn ', turn, ' on MPI process: ', rank
 	if turn in sts['turns_print']:
 		saveBunchAsMatfile(bunch, "input/mainbunch")
 		saveBunchAsMatfile(bunch, "bunch_output/mainbunch_%s"%(str(turn).zfill(6)))
@@ -400,4 +404,5 @@ for turn in range(sts['turn']+1, sts['turns_max']):
 		if not rank:
 			with open(status_file, 'w') as fid:
 				pickle.dump(sts, fid)
+				
 	print '\nEnd of loop for turn', turn, ' on MPI process: ', rank
