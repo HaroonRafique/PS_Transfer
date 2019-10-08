@@ -369,7 +369,7 @@ print '\n\tTurn = ', sts['turn']+1
 print '\tMax Turns = ', sts['turns_max']
 
 for turn in range(sts['turn']+1, sts['turns_max']):
-	print '\t Starting tracking loop for turn', turn, ' on MPI process: ', rank
+	print '\n\tStarting tracking loop for turn', turn, ' on MPI process: ', rank
 	if not rank:	last_time = time.time()
 
 	# ~ if turn == 0:
@@ -379,23 +379,23 @@ for turn in range(sts['turn']+1, sts['turns_max']):
 		# ~ start_time = time.time()
 		# ~ print 'start time = ', start_time
 
-	print '\t Starting tracking for turn', turn, ' on MPI process: ', rank
+	print '\n\t\t Starting tracking for turn', turn, ' on MPI process: ', rank
 	Lattice.trackBunch(bunch, paramsDict)
 	
-	print '\t bunchtwissanalysis for turn', turn, ' on MPI process: ', rank
+	print '\n\t\t bunchtwissanalysis for turn', turn, ' on MPI process: ', rank
 	bunchtwissanalysis.analyzeBunch(bunch)  # analyze twiss and emittance
 	# ~ void computeBunchMoments(Bunch* bunch, int order, int dispersionflag, int emitnormflag);
 	# ~ print '\t computeBunchMoments on MPI process: ', rank
 	# ~ bunchtwissanalysis.computeBunchMoments(bunch, 3, 1, 1)
 
 
-	print '\t Update pickle turns in turn ', turn, ' on MPI process: ', rank
+	print '\n\t\t\t Update pickle turns in turn ', turn, ' on MPI process: ', rank
 	if turn in sts['turns_update']:	sts['turn'] = turn
 
-	print '\t output.update() in turn ', turn, ' on MPI process: ', rank
+	print '\n\t\t\t output.update() in turn ', turn, ' on MPI process: ', rank
 	output.update()
 
-	print '\t Print files in turn ', turn, ' on MPI process: ', rank
+	print '\n\t\t\t Print files in turn ', turn, ' on MPI process: ', rank
 	if turn in sts['turns_print']:
 		saveBunchAsMatfile(bunch, "input/mainbunch")
 		saveBunchAsMatfile(bunch, "bunch_output/mainbunch_%s"%(str(turn).zfill(6)))
@@ -405,4 +405,4 @@ for turn in range(sts['turn']+1, sts['turns_max']):
 			with open(status_file, 'w') as fid:
 				pickle.dump(sts, fid)
 				
-	print '\nEnd of loop for turn', turn, ' on MPI process: ', rank
+	print '\n\tEnd of loop for turn', turn, ' on MPI process: ', rank
