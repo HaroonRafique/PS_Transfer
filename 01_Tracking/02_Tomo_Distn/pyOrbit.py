@@ -367,12 +367,12 @@ output.addParameter('eff_epsn_x', lambda: bunchtwissanalysis.getEffectiveEmittan
 output.addParameter('eff_epsn_y', lambda: bunchtwissanalysis.getEffectiveEmittance(1))
 output.addParameter('eff_alpha_x', lambda: bunchtwissanalysis.getEffectiveAlpha(0))
 output.addParameter('eff_alpha_y', lambda: bunchtwissanalysis.getEffectiveAlpha(1))
-output.addParameter('01', lambda: bunchtwissanalysis.getBunchMoment(0,1))
-output.addParameter('10', lambda: bunchtwissanalysis.getBunchMoment(1,0))
-output.addParameter('02', lambda: bunchtwissanalysis.getBunchMoment(0,2))
-output.addParameter('20', lambda: bunchtwissanalysis.getBunchMoment(2,0))
-output.addParameter('11', lambda: bunchtwissanalysis.getBunchMoment(1,1))
-output.addParameter('22', lambda: bunchtwissanalysis.getBunchMoment(2,2))
+# ~ output.addParameter('01', lambda: bunchtwissanalysis.getBunchMoment(0,1))
+# ~ output.addParameter('10', lambda: bunchtwissanalysis.getBunchMoment(1,0))
+# ~ output.addParameter('02', lambda: bunchtwissanalysis.getBunchMoment(0,2))
+# ~ output.addParameter('20', lambda: bunchtwissanalysis.getBunchMoment(2,0))
+# ~ output.addParameter('11', lambda: bunchtwissanalysis.getBunchMoment(1,1))
+# ~ output.addParameter('22', lambda: bunchtwissanalysis.getBunchMoment(2,2))
 output.addParameter('sigma_x', lambda: GetBunchSigmas(bunch)[0])
 output.addParameter('sigma_y', lambda: GetBunchSigmas(bunch)[1])
 
@@ -414,8 +414,8 @@ for turn in range(sts['turn']+1, sts['turns_max']):
 	print '\t bunchtwissanalysis on MPI process: ', rank
 	bunchtwissanalysis.analyzeBunch(bunch)  # analyze twiss and emittance
 	# ~ void computeBunchMoments(Bunch* bunch, int order, int dispersionflag, int emitnormflag);
-	print '\t computeBunchMoments on MPI process: ', rank
-	bunchtwissanalysis.computeBunchMoments(bunch, 3, 1, 1)
+	# ~ print '\t computeBunchMoments on MPI process: ', rank
+	# ~ bunchtwissanalysis.computeBunchMoments(bunch, 3, 1, 1)
 
 	if turn in sts['turns_update']:	sts['turn'] = turn
 
