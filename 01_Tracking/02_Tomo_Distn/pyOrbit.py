@@ -398,7 +398,7 @@ print '\n\tTurn = ', sts['turn']+1
 print '\tMax Turns = ', sts['turns_max']
 
 for turn in range(sts['turn']+1, sts['turns_max']):
-	print '\t Starting tracking loop on MPI process: ', rank
+	print '\t Starting tracking loop for turn', turn, ' on MPI process: ', rank
 	if not rank:	last_time = time.time()
 
 	# ~ if turn == 0:
@@ -408,10 +408,10 @@ for turn in range(sts['turn']+1, sts['turns_max']):
 		# ~ start_time = time.time()
 		# ~ print 'start time = ', start_time
 
-	print '\t Starting tracking loop on MPI process: ', rank
+	print '\t Starting tracking for turn', turn, ' on MPI process: ', rank
 	Lattice.trackBunch(bunch, paramsDict)
 	
-	print '\t bunchtwissanalysis on MPI process: ', rank
+	print '\t bunchtwissanalysis for turn', turn, ' on MPI process: ', rank
 	bunchtwissanalysis.analyzeBunch(bunch)  # analyze twiss and emittance
 	# ~ void computeBunchMoments(Bunch* bunch, int order, int dispersionflag, int emitnormflag);
 	# ~ print '\t computeBunchMoments on MPI process: ', rank
