@@ -533,7 +533,7 @@ def generate_initial_distribution(parameters, Lattice,output_file = 'Input/Parti
 				xp[i] += closedOrbitx['xp0']
 				y[i] += closedOrbity['y0']
 				yp[i] += closedOrbity['yp0']
-				dpp = dE[i] / (parameters['energy']) / parameters['beta']**2
+				dpp = dE[i] / (parameters['energy']) / parameters['beta']**2 *1E9
 				x[i] += dpp * dispersionx['etax0']
 				xp[i] += dpp * dispersionx['etapx0']
 				y[i] += dpp * dispersiony['etay0']
@@ -544,7 +544,7 @@ def generate_initial_distribution(parameters, Lattice,output_file = 'Input/Parti
 					xp[i] *= 1000.
 					y[i] *= 1000.
 					yp[i] *= 1000.
-					dE[i] /= 1.e9
+					# ~ dE[i] /= 1.e9
 					csv_writer.writerow([x[i], xp[i], y[i], yp[i], phi[i], dE[i]])
 				#csv_writer.writerow([x[i], xp[i], y[i], yp[i], z[i], dE[i]])
 		if summary_file:
