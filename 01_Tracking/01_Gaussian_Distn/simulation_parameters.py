@@ -21,7 +21,7 @@ dpp_rms = 9e-04
 rf_voltage = 0.0212942055190595723
 
 # Simulation Parameters
-n_macroparticles = int(1E3)
+n_macroparticles = int(1E4)
 turns_max = int(20)
 tu = range(1, turns_max)
 
