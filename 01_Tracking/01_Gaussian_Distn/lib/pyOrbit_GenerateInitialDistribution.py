@@ -665,24 +665,24 @@ def generate_initial_distribution_3DGaussian(parameters, Lattice, output_file = 
 		fid = open(output_file,"w")
 		csv_writer = csv.writer(fid, delimiter=' ')
 		for i in range(parameters['n_macroparticles']):
-			
+
 			# Longitudinal distn - use 5 sigma as cut-off (manual)
-			
+
 			outside_limits_E = True
 			while outside_limits_E:
 				dE[i] = random.gauss(0., sig_E)	# Energy in eV
 				if abs(dE[i]) < (5*sig_E):
 					# ~ print '\n\tdE = ', dE[i]
 					outside_limits_E = False
-			
-			outside_limits_z = True			
+
+			outside_limits_z = True
 			while outside_limits_z:
 				z_temp = random.gauss(0., parameters['blength_rms'])
-				if abs(z_temp) < (5*parameters['blength_rms']):			
-					# ~ print '\n\tz_temp = ', z_temp		
+				if abs(z_temp) < (5*parameters['blength_rms']):
+					# ~ print '\n\tz_temp = ', z_temp
 					phi[i] = - z_temp * h_main / R 
 					outside_limits_z = False
-							
+
 			(x[i], xp[i], y[i], yp[i]) = Transverse_distribution.getCoordinates()
 			x[i] += closedOrbitx['x0']
 			xp[i] += closedOrbitx['xp0']
@@ -690,16 +690,16 @@ def generate_initial_distribution_3DGaussian(parameters, Lattice, output_file = 
 			yp[i] += closedOrbity['yp0']
 			dpp = dE[i] / (parameters['energy']) / parameters['beta']**2
 			x[i] += dpp * dispersionx['etax0']
-			xp[i] += dpp * dispersionx['etapx0']	
+			xp[i] += dpp * dispersionx['etapx0']
 			y[i] += dpp * dispersiony['etay0']
-			yp[i] += dpp * dispersiony['etapy0']	
-		
+			yp[i] += dpp * dispersiony['etapy0']
+
 			if outputFormat == 'Orbit':
 				x[i] *= 1000.
 				xp[i] *= 1000.
 				y[i] *= 1000.
 				yp[i] *= 1000
-				dE[i] /= 1.e9		
+				dE[i] /= 1.e9
 				csv_writer.writerow([x[i], xp[i], y[i], yp[i], phi[i], dE[i]])
 		#	else:
 				# still need to convert from phi to z!!
