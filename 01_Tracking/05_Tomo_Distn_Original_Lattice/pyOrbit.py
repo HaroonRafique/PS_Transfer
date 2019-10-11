@@ -252,10 +252,10 @@ if sts['turn'] < 0:
 		print '\ngenerate_initial_distribution on MPI process: ', rank
 
 		if s['Mismatch']:
-			print '\n\n\t\generate_initial_distribution_from_tomo_manual_Twiss'
+			print '\n\n\tgenerate_initial_distribution_from_tomo_manual_Twiss'
 			Particle_distribution_file = generate_initial_distribution_from_tomo_manual_Twiss(p, twiss_dict, 1, output_file='input/ParticleDistribution.in', summary_file='input/ParticleDistribution_summary.txt')
 		else:
-			print '\n\n\t\generate_initial_distribution_from_tomo'
+			print '\n\n\tgenerate_initial_distribution_from_tomo'
 			Particle_distribution_file = generate_initial_distribution_from_tomo(p, 1, Lattice, output_file='input/ParticleDistribution.in', summary_file='input/ParticleDistribution_summary.txt')
 
 		print '\nbunch_orbit_to_pyorbit on MPI process: ', rank

@@ -223,10 +223,10 @@ if sts['turn'] < 0:
 
 		print '\ngenerate_initial_distribution on MPI process: ', rank
 		if s['Mismatch']:
-			print '\n\n\t\generate_initial_distribution_3DGaussian'
+			print '\n\n\tgenerate_initial_distribution_3DGaussian'
 			Particle_distribution_file = generate_initial_distribution_3DGaussian(p, Lattice, output_file='input/ParticleDistribution.in', summary_file='input/ParticleDistribution_summary.txt')
 		else:
-			print '\n\n\t\generate_initial_distribution_3DGaussian'
+			print '\n\n\tgenerate_initial_distribution_3DGaussian'
 			Particle_distribution_file = generate_initial_distribution_3DGaussian(p, Lattice, output_file='input/ParticleDistribution.in', summary_file='input/ParticleDistribution_summary.txt')
 
 		print '\nbunch_orbit_to_pyorbit on MPI process: ', rank
