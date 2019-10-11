@@ -27,23 +27,19 @@ beam, particle=proton, pc=pc;
 use, sequence=PS;
 
 /***********************************************************************
- * Here we manually edit the sequence (lattice) to install a zero length
- * beam wire scanner at the start of region 64. We then save the new 
- * sequence to a file.
+ * Here we manually edit the sequence (lattice) to start at the BGI.
  **********************************************************************/
-PR.BWSV64     :  MONITOR  , L = 0.0; 
+PI.BSG52     :  MONITOR  , L = 0.0; 
 
 seqedit, sequence=PS;
 	flatten;
-	install, element=PR.BWSV64, at=0.4, from=PS64$START;
+	install, element=PI.BSG52, at=.0934, from=PS52$START;
 	flatten;
 endedit;
 
-use, sequence=PS;
-
 seqedit, sequence=PS;
 	flatten;
-	cycle , start=PR.BWSV64;
+	cycle , start=PI.BSG52;
 	flatten;
 endedit;
 
@@ -74,7 +70,7 @@ pfki3d             =      -0.1213423287 ;
  *
  * Using model=2, exact=true is recommended.
  **********************************************************************/
-
+ 
 ptc_twiss_tune_macro_false_split: macro={
   ptc_create_universe;
   ptc_create_layout, time=true, model=2, exact=true, method=6, nst=3;

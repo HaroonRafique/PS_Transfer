@@ -62,6 +62,6 @@ select, flag=seqedit, class = MCHBBWWP;
 select, flag=seqedit, class = URS;
 select, flag=seqedit, class = MQNCAAWP;
 select, flag=seqedit, class = KFB;
-select, flag=seqedit, class = BSGW;
+!select, flag=seqedit, class = BSGW;
 select, flag=seqedit, class = ULF;
 select, flag=seqedit, class = ULG;
