@@ -130,8 +130,8 @@ mpi_mkdir_p('output')
 # load bunch from file
 #-----------------------------------------------------------------------
 
-# ~ path_to_distn = '../01_Tracking/MD4224_Nominal_WP_Tomo_Distn.mat'
-path_to_distn = 'PyORBIT_Tomo_file_MD4224_HB.mat'
+path_to_distn = '../01_Tracking/MD4224_Nominal_WP_Tomo_Distn.mat'
+# ~ path_to_distn = 'PyORBIT_Tomo_file_MD4224_HB.mat'
 bunch = bunch_from_matfile(path_to_distn)
 
 # Add Macrosize to bunch
@@ -183,7 +183,7 @@ paramsDict["bunch"]= bunch
 
 # Define twiss analysis and output dictionary
 #-----------------------------------------------------------------------
-print '\nTWISS on MPI process: ', rank
+print '\nbunchtwissanalysis on MPI process: ', rank
 bunchtwissanalysis = BunchTwissAnalysis() #Prepare the analysis class that will look at emittances, etc.
 get_dpp = lambda b, bta: np.sqrt(bta.getCorrelation(5,5)) / (b.getSyncParticle().gamma()*b.mass()*b.getSyncParticle().beta()**2)
 get_bunch_length = lambda b, bta: 4 * np.sqrt(bta.getCorrelation(4,4)) / (speed_of_light*b.getSyncParticle().beta())
