@@ -386,8 +386,8 @@ def generate_initial_distribution_from_tomo(parameters, matfile=0, Lattice=None,
 				xp[i] *= 1000.
 				y[i] *= 1000.
 				yp[i] *= 1000.
-				# ~ dE[i] /= 1.e9	
-						
+				dE[i] /= 1.e9	# On for test
+				
 			# ~ if outputFormat == 'Orbit':
 			map(lambda i: csv_writer.writerow([x[i], xp[i], y[i], yp[i], phi[i], dE[i]]), range(parameters['n_macroparticles']))	
 			# ~ elif outputFormat == 'pyOrbit':
