@@ -7,5 +7,5 @@ SET ORBIT RESTORE
  f f
 initialize cavity
 1         ! number of cavities
-PA.C10.91,  "input/RF_table.ptc"
+PR.C10.91,  "input/RF_table.ptc"
 return
