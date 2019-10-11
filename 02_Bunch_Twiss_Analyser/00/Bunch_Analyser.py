@@ -122,10 +122,7 @@ print 'Start on MPI process: ', rank
 #-----------------------------------------------------------------------
 print '\nmkdir on MPI process: ', rank
 from lib.mpi_helpers import mpi_mkdir_p
-# ~ mpi_mkdir_p('input')
-# ~ mpi_mkdir_p('bunch_output')
 mpi_mkdir_p('output')
-# ~ mpi_mkdir_p('lost')
 
 # load bunch from file
 #-----------------------------------------------------------------------
