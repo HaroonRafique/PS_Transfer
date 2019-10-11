@@ -255,8 +255,8 @@ if sts['turn'] < 0:
 			print '\n\n\t\generate_initial_distribution_from_tomo_manual_Twiss'
 			Particle_distribution_file = generate_initial_distribution_from_tomo_manual_Twiss(p, twiss_dict, 1, output_file='input/ParticleDistribution.in', summary_file='input/ParticleDistribution_summary.txt')
 		else:
-			print '\n\n\t\generate_initial_distribution'
-			Particle_distribution_file = generate_initial_distribution(p, Lattice, output_file='input/ParticleDistribution.in', summary_file='input/ParticleDistribution_summary.txt')
+			print '\n\n\t\generate_initial_distribution_from_tomo'
+			Particle_distribution_file = generate_initial_distribution_from_tomo(p, 1, Lattice, output_file='input/ParticleDistribution.in', summary_file='input/ParticleDistribution_summary.txt')
 
 		print '\nbunch_orbit_to_pyorbit on MPI process: ', rank
 		bunch_orbit_to_pyorbit(paramsDict["length"], kin_Energy, Particle_distribution_file, bunch, p['n_macroparticles'] + 1) #read in only first N_mp particles.
