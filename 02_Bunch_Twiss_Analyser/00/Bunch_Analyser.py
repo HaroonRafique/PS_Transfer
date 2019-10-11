@@ -130,8 +130,8 @@ mpi_mkdir_p('output')
 # load bunch from file
 #-----------------------------------------------------------------------
 
-path_to_distn = '../01_Tracking/MD4224_Nominal_WP_Tomo_Distn.mat'
-# ~ path_to_distn = 'PyORBIT_Tomo_file_MD4224_HB.mat'
+path_to_distn = '../../01_Tracking/MD4224_Nominal_WP_Tomo_Distn.mat'
+# ~ path_to_distn = 'Inputs/'
 bunch = bunch_from_matfile(path_to_distn)
 
 # Add Macrosize to bunch
@@ -168,7 +168,7 @@ bunch = bunch_from_matfile(path_to_distn)
 # ~ bunch = bunch_from_matfile(sts['mainbunch_file'])
 # ~ lostbunch = bunch_from_matfile(sts['lostbunch_file'])
 # ~ paramsDict["lostbunch"]=lostbunch
-paramsDict["bunch"]= bunch
+#paramsDict["bunch"]= bunch
 
 # Add tune analysis child node
 #-----------------------------------------------------
@@ -189,7 +189,8 @@ get_dpp = lambda b, bta: np.sqrt(bta.getCorrelation(5,5)) / (b.getSyncParticle()
 get_bunch_length = lambda b, bta: 4 * np.sqrt(bta.getCorrelation(4,4)) / (speed_of_light*b.getSyncParticle().beta())
 get_eps_z = lambda b, bta: 1e9 * 4 * pi * bta.getEmittance(2) / (speed_of_light*b.getSyncParticle().beta())
 
-output_file = 'output/output.mat'
+#output_file = 'output/MD4224_Nominal_WP_Tomo_Distn_output.mat'
+output_file = 'output/MD4224_Nominal_WP_Tomo_Distn_output.mat'
 output = Output_dictionary()
 output.addParameter('turn', lambda: turn)
 output.addParameter('intensity', lambda: bunchtwissanalysis.getGlobalMacrosize())
