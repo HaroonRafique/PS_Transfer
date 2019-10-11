@@ -3,7 +3,7 @@ import numpy as np
 mismatch_factor=1.0
 
 tomo_file = 'PyORBIT_Tomo_file_MD4224_HB.mat'
-input_distn = '../../Initial_Distn/mainbunch.mat'
+input_distn = '../MD4224_Nominal_WP_Tomo_Distn.mat'
 
 # PS Injection 1.4 GeV
 gamma = 2.49253731343
