@@ -6,7 +6,7 @@ select, flag=seqedit, class = BCW_A;
 select, flag=seqedit, class = KFA__001;
 select, flag=seqedit, class = MONDAFWP;
 select, flag=seqedit, class = MXNBAFWP;
-select, flag=seqedit, class = MDBBBCWP;
+!select, flag=seqedit, class = MDBBBCWP;
 select, flag=seqedit, class = UPH__001;
 select, flag=seqedit, class = BTVPL001;
 select, flag=seqedit, class = BPUWA;
