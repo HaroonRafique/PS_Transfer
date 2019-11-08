@@ -1,9 +1,0 @@
-@ NAME             %10s "MULTIMATCH"
-@ TYPE             %04s "USER"
-@ TITLE            %36s "Flat file generation for PTC-PyORBIT"
-@ ORIGIN           %22s "MAD-X 5.02.00 Linux 64"
-@ DATE             %08s "10/10/19"
-@ TIME             %08s "14.58.15"
-*                QX0                QY0             PFKI1F             PFKI2F             PFKI3F             PFKI1D             PFKI2D             PFKI3D 
-$                %le                %le                %le                %le                %le                %le                %le                %le 
-       0.2100020661        0.319995459    -0.002612815121      0.02189432807       0.1160523813     0.002452295508     -0.02318591233      -0.1213423287

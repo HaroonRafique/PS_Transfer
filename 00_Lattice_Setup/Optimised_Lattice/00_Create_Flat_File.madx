@@ -1,0 +1,151 @@
+TITLE, "Flat file generation for PTC-PyORBIT";
+
+/***********************************************************************
+ * INITIALIZATION
+ * First we call the files describing the machine, in this case we use 
+ * the CERN proton synchrotron (PS).
+ **********************************************************************/
+
+call, file="New_Lattice/ps_mu.seq";
+call, file="New_Lattice/ps_ss.seq";
+call, file="New_Lattice/ps.str";
+call, file="New_Lattice/macros.ptc";
+
+/***********************************************************************
+ * Create a MAD-X beam and tell MAD-X which accelerator lattice to use.
+ **********************************************************************/
+beam, particle=proton, pc=2.14;
+BRHO      := BEAM->PC * 3.3356;
+
+RFV := 0.021;
+
+tune_x = 0.218;
+tune_y = 0.24;
+ 
+/*******************************************************************************
+**                        SBEND K1 and multipoles in MUs                      **
+*******************************************************************************/
+k1_f               =      0.05701797199 ;
+k1_d               =     -0.05720665382 ;
+k2_f               =      0.01600229475 ;
+k2_d               =     -0.01800302349 ;
+mpk2               =     -0.018580 ;
+mpk2_j             =      0.039347 ;
+mpk3_f             =      0.1021894047 ;
+mpk3_d             =     -0.1012728309 ;
+
+/***********************************************************************
+**        From Matt's ps_inj_lhc_leq_matching_QX218_QY240.dat         **
+***********************************************************************/
+kf                 =    -0.001747577788 ;
+kd                 =      0.00350801661 ;
+
+BSW40 := 0.00441284;
+BSW42 := -0.01552841;
+BSW43 := 0.01268790;
+BSW44 := -0.00460768;
+
+/***********************************************************************
+**                       START at BSG52 SEM Grid                      **
+***********************************************************************/
+seqedit,sequence = PS;
+	flatten;
+endedit;
+
+seqedit,sequence = PS;
+	call, file = 'New_Lattice/remove_elements.seq';
+	remove, element=SELECTED;
+endedit;
+
+seqedit, sequence=PS;
+	flatten;
+	cycle , start=PI.BSG52;
+	flatten;
+endedit;
+
+/***********************************************************************
+ * PTC TWISS
+ **********************************************************************/
+! PTC integration parameters
+
+propagation_method = 2; 
+order_of_integrator = 6;
+
+! propagation_method 1: Drift-Kick-Drift
+! 2 = 2nd order, one kick per integration step, naive.
+! 4 = Ruth-Neri-Yoshida 4th order method, 3 kicks per integration step.
+! 6 = Yoshida 6th order method, 7 kicks per integration step.
+
+! propagation_method 2: Matrix-Kick-Matrix
+! 2 = Euler-like Matrix-Kick-Matrix
+! 4 = Simpson-like (1/6)K-M-(2/3)K-M-(1/6)K
+! 6 = Bode-like (7/90)K-M-(32/90)K-M-(12/90)K-M-(32/90)K-M-(7/90)K
+
+! exact = true ensures SBENDs orbit is correct
+! avoids quadrupole feed-down effects leading to closed orbit distortions
+
+integration_steps_per_element = 5; ! 3;
+map_order = 5;
+
+use, sequence=PS;
+ptc_create_universe;
+ptc_create_layout,time=true, model=propagation_method, exact=true, method=order_of_integrator, nst=integration_steps_per_element;
+select, flag=ptc_twiss, clear; 
+select, flag=ptc_twiss, column=name, s, betx, bety, disp1, disp3, x, px, y, py;
+ptc_twiss, icase=5, no=map_order, closed_orbit, file=optimised_bare_simplified_V.tfs, table=ptc_twiss;
+ptc_end;
+ 
+/***********************************************************************
+ * Next we use a ptc macro to match the tunes in the lattice to
+ * desired values tune_x and tune_y.
+ *
+ * Using model=2, exact=true is recommended.
+ **********************************************************************/
+ 
+ptc_twiss_tune_macro_false_split: macro={
+  ptc_create_universe;
+  ptc_create_layout, time=true, model=propagation_method, exact=true, method=order_of_integrator, nst=integration_steps_per_element;
+  ptc_twiss, closed_orbit, table = ptc_twiss, icase=56, no=2, summary_table=ptc_twiss_summary;
+  qx0=table(ptc_twiss_summary,Q1);
+  qy0=table(ptc_twiss_summary,Q2);
+  value, qx0, qy0;
+  ptc_end;
+};
+
+use, sequence=PS;
+match, use_macro;
+  vary,   name=kf, step=1.0E-6 ;
+  vary,   name=kd, step=1.0E-6 ;
+  USE_MACRO, name=ptc_twiss_tune_macro;									!As used by Matt
+  !USE_MACRO, name=ptc_twiss_tune_macro_false_split;					!As used by Haroon
+  CONSTRAINT, expr=  table(ptc_twiss_summary,Q1)= tune_x;
+  CONSTRAINT, expr=  table(ptc_twiss_summary,Q2)= tune_y;
+  JACOBIAN,calls=10000,bisec=3,TOLERANCE=1.0E-21;
+ENDMATCH;
+value, kf, kd;
+
+/***********************************************************************
+ * PTC TWISS
+ **********************************************************************/
+ptc_create_universe;
+ptc_create_layout,time=true, model=propagation_method, exact=true, method=order_of_integrator, nst=integration_steps_per_element;
+select, flag=ptc_twiss, clear; 
+select, flag=ptc_twiss, column=name, s, betx, bety, disp1, disp3, x, px, y, py;
+ptc_twiss, icase=5, no=map_order, closed_orbit, file=optimised_LEQ_simplified_V.tfs , table=ptc_twiss;
+ptc_end;
+
+/***********************************************************************
+ * Next we use the PTC script resplit.ptc - this is used to split
+ * defined elements (dipole, quadrupole, sextupole families etc) in
+ * order to introduce space charge nodes inside their length. See the
+ * file for further information. Then the flat file is generated and 
+ * saved.
+ **********************************************************************/
+ptc_create_universe;
+ptc_create_layout,time=true, model=propagation_method, exact=true, method=order_of_integrator, nst=integration_steps_per_element;
+ptc_script, file="./resplit.ptc";
+ptc_script, file="./print_flat_file.ptc";
+select, flag=ptc_twiss, clear; 
+select, flag=ptc_twiss, column=name, s, betx, bety, disp1, disp3, x, px, y, py;
+ptc_twiss, icase=5, no=map_order, deltap_dependency, closed_orbit, file=optimised_LEQ_final_V.tfs, table=ptc_twiss;
+ptc_end;

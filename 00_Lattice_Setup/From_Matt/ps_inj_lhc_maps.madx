@@ -1,0 +1,208 @@
+/**********************************************************************************
+*
+* MAD-X input script for the injection optics of the LHC cycle with low-chromaticity 
+* setup.
+* 22/07/2019 - Alexander Huschauer
+************************************************************************************/
+ 
+/******************************************************************
+ * Energy and particle type definition
+ ******************************************************************/
+
+BEAM, PARTICLE=PROTON, PC = 2.14;
+BRHO      := BEAM->PC * 3.3356;
+!BEAM, PARTICLE=POSITRON, PC = 100;
+!BRHO      := BEAM->PC * 3.3356;
+/******************************************************************
+ * Call lattice files
+ ******************************************************************/
+
+call, file="../../../ps_mu.seq";
+call, file="../../../ps_ss.seq";
+call, file="../../../ps.str";
+call, file="./ps_inj_lhc.str";
+call, file="../../../macros.ptc";
+!call, file="./frozen/QX218_QY235/ps_inj_lhc_leq_matching_QX218_QY235.dat";
+call, file="./frozen/QX218_QY240/ps_inj_lhc_leq_matching_QX218_QY240.dat";
+
+/******************************************************************
+ * PTC Twiss
+ ******************************************************************/
+
+use, sequence=PS;
+select, flag=ptc_twiss, column=name,keyword,s,x,px,y,py,t,pt,beta11,alfa11,beta22,alfa22,disp1,disp2,disp3,disp4,gamma11,gamma22,mu1,mu2,energy,l,angle,K0L,K0SL,K1L,K1SL,K2L,K2SL,K3L,K3SL,K4L,K4SL,K5L,K5SL,VKICK,HKICK,SLOT_ID;
+ptc_create_universe;
+ptc_create_layout, model=2, method=6, nst=5, exact=true;
+ptc_twiss,closed_orbit,icase=56,no=4, file = './ps_inj_lhc.tfs';
+ptc_end;
+
+/******************************************************************
+ * Twiss
+ ******************************************************************/
+
+seqedit, sequence = PS;
+flatten;
+install, element = start_map, class = marker, at = 1e-9, from = PI.BSG52 ;
+install, element = stop_map, class = marker, at = -1e-9, from = PI.BSG52 ;
+flatten;
+cycle, start = PI.BSG52;
+flatten;
+endedit;
+
+use, sequence=PS;
+select, flag=twiss, clear;
+select, flag=twiss, column=name,s,l,x,betx,dx,dpx,re16,aper_1,y,bety,dy,aper_2, alfx, alfy, px, py, mux, muy,k2l;
+twiss, rmatrix, deltap=0.0;
+write, table=twiss, file=twiss_ref.tfs;
+
+select, flag=sectormap, clear;
+select, flag=sectormap, range=#E;
+twiss, sectormap, sectorfile=twiss_ref_sector_map.tfs, deltap=0.0;
+
+/******************************************************************
+ * Setup PTC
+ ******************************************************************/
+
+method_ptc = 6;
+model_ptc = 2; ! 1 = drift-kick-drift, 2 = matrix-kick-matrix, 3 = Delta-matrix-kick-matrix (SixTrack)
+slice_number = 5;
+map_order = 5;
+
+
+/******************************************************************
+ * PTC Twiss
+ ******************************************************************/
+
+use, sequence = PS;
+
+ptc_create_universe;
+ptc_create_layout, model=model_ptc, method=method_ptc, nst=slice_number, exact;
+select, flag=ptc_twiss, clear;
+select, flag=ptc_twiss, column=name,s,l,x,betx,dx,disp1,disp3,aper_1,y,bety,dy,disp2,disp4,aper_2, alfx, alfy, px, py, mux, muy,k2l, dpx, dpy, k3l;
+ptc_twiss, icase=5, no=map_order, closed_orbit, table, summary_table, file='ptc_twiss_ref.tfs';
+
+!value, table(ptc_twiss_summary,orbit_x);
+!value, table(ptc_twiss_summary,orbit_px);
+x_co = table(ptc_twiss,start_map,x);
+px_co = table(ptc_twiss,start_map,px);
+y_co = table(ptc_twiss,start_map,y);
+py_co = table(ptc_twiss,start_map,py);
+
+get_sector_map_ptc(start_ele, end_ele): macro = {
+
+    use, sequence = PS;
+
+    seqedit, sequence = PS;
+    flatten;
+    cycle, start = start_ele;
+    endedit;
+
+    use, sequence = PS;
+
+    ptc_create_universe, ntpsa=true, symprint=true;
+    ptc_create_layout, model=model_ptc, method=method_ptc, nst=slice_number, exact;
+
+    select, flag=ptc_twiss, clear;
+    select, flag=ptc_twiss, column=name,s,l,x,betx,dx,aper_1,y,bety,dy,aper_2, alfx, alfy, px, py, mux, muy,k2l, dpx, dpy;
+    ptc_twiss, icase=6, no=map_order, closed_orbit, table, summary_table, maptable;
+
+    write, table=map_table, file='ptc_map_from_twiss.tfs';
+
+    ptc_normal, closed_orbit, maptable, icase=6, no=map_order;
+
+    write, table=map_table, file='ptc_map_from_norm.tfs';
+
+    ptc_end;
+
+    use, sequence = PS, range= start_ele / end_ele;
+
+    ptc_create_universe, ntpsa=true, symprint=true;
+    ptc_create_layout, model=model_ptc, method=method_ptc, nst=slice_number, exact;
+
+    select, flag=ptc_twiss, clear;
+    select, flag=ptc_twiss, column=name,s,l,x,betx,dx,aper_1,y,bety,dy,aper_2, alfx, alfy, px, py, mux, muy,k2l, dpx, dpy;
+    ptc_twiss, icase=6, no=map_order, maptable, initial_map_manual;
+    write, table=map_table, file='ptc_map_start_ele_end_ele.tfs';
+    ptc_end;
+
+};
+
+! Uncomment to generate maps
+exec, get_sector_map_ptc(start_map, stop_map);
+
+/******************************************************************
+ * PTC Track for benchmarking
+ ******************************************************************/
+
+use, sequence = PS;
+
+ptc_create_universe;
+ptc_create_layout, model=model_ptc, method=method_ptc, nst=slice_number, exact;
+select, flag=ptc_twiss, clear;
+select, flag=ptc_twiss, column=name,s,l,x,betx,dx,disp1,aper_1,y,bety,dy,disp2,aper_2, alfx, alfy, px, py, mux, muy,k2l, dpx, dpy, k3l;
+
+value, x_co;
+value, px_co;
+value, y_co;
+value, py_co;
+
+! Tracking with offsets in X
+!i = 0;
+!while(i <= 50){
+!    ptc_start, x= x_co + 1e-3 * i, px= px_co, y= y_co, py= py_co, t=0, pt=0.0;
+!    i = i + 5;
+!};
+
+!ptc_track, icase = 5, turns = 300, dump, onetable=false, NORM_NO=15, file="./track_one_turn_map_benchmark/trackout_simple_ptc";
+
+! Tracking with offsets in PT
+i = 0;
+m = 2e-3 / 10;
+n = -1e-3;
+while(i <= 10){
+    ptc_start, x= x_co, px= px_co, y= 0.0, py= 0.0, t=0, pt=(i * m + n);   
+i = i + 1;
+};
+
+ptc_track, icase = 5, turns = 30, dump, onetable=false, NORM_NO=15, file="./track_dispersion_tbt/trackout_simple_ptc";
+ptc_track_end;
+
+!ptc_track,icase=4,closed_orbit,dump, // deltap=0.0D0
+!       element_by_element,
+!       maxaper=0.05,0.001,0.05,0.001,0.9,0.09,
+!       turns=1000, ffile=1, norm_no=1;
+stop;
+
+
+/******************************************************************
+ *                   Tune matching with LEQ
+ *
+ *           Matching to the standard operational WP
+ ******************************************************************/
+
+Qx := 0.218;
+Qy := 0.24;
+
+use, sequence=PS;
+match,use_macro;
+        vary, name = kf;
+        vary, name = kd;
+        use_macro, name = ptc_twiss_tune_macro;
+        constraint, expr = table(ptc_twiss_summary,Q1) = Qx;
+        constraint, expr = table(ptc_twiss_summary,Q2) = Qy;
+jacobian,calls=50000,bisec=3;
+ENDMATCH;
+
+!assign, echo="./ps_fb_lhc_leq_matching.dat";
+assign, echo="./ps_inj_lhc_leq_matching.dat";
+value, kf, kd;
+Assign, echo=terminal;
+
+stop;
+! obtain smooth optics functions by slicing the elements
+use, sequence=PS;
+select, flag=ptc_twiss, column=name,keyword,s,x,px,y,py,t,pt,beta11,alfa11,beta22,alfa22,disp1,disp,disp3,disp4,gamma11,gamma22,mu1,mu2,energy,l,angle,K0L,K0SL,K1L,K1SL,K2L,K2SL,K3L,K3SL,K4L,K4SL,K5L,K5SL,VKICK,HKICK,SLOT_ID;
+ptc_create_universe;
+ptc_create_layout, model=2, method=6, nst=5, exact=true,;
+ptc_twiss,closed_orbit,icase=56,no=4,slice_magnets=true, file = './ps_inj_lhc_interpolated.tfs';
+ptc_end;
