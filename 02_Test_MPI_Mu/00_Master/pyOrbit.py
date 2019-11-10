@@ -132,13 +132,7 @@ Lattice.readPTC(PTC_File)
 print '\n\t\tRead PTC files on MPI process: ', rank
 CheckAndReadPTCFile('PTC/fringe.ptc')
 CheckAndReadPTCFile('PTC/time.ptc')
-if p['lattice_version'] is 'Optimised':
-	CheckAndReadPTCFile('PTC/ramp_cavities_optimised.ptc')
-elif p['lattice_version'] is 'Original':
-	CheckAndReadPTCFile('PTC/ramp_cavities.ptc')
-else:
-	print '\n\tp[\'lattice_version\'] not recognised, options are \'Optimised\' or \'Original\'. Exiting.'
-	exit(0)
+CheckAndReadPTCFile('PTC/ramp_cavities_optimised.ptc')
 
 # Create a dictionary of parameters
 #-----------------------------------------------------------------------
@@ -170,15 +164,15 @@ if sts['turn'] < 0:
 	p['beta']            = bunch.getSyncParticle().beta()
 	p['energy']          = 1e9 * bunch.mass() * bunch.getSyncParticle().gamma()
 	# ~ p['bunch_length'] = p['sig_z']/speed_of_light/bunch.getSyncParticle().beta()*4
-	p['bunch_length'] = p['bunch_length']
+	# ~ p['bunch_length'] = p['bunch_length']
 	kin_Energy = bunch.getSyncParticle().kinEnergy()
 
 	print '\n\t\tOutput simulation_parameters on MPI process: ', rank
 	for i in p:
 		print '\t', i, '\t = \t', p[i]
 
-	print '\n\t\tLoad distribution from ', p['input_distn'] ,' on MPI process: ', rank
-	path_to_distn = p['input_distn']
+	print '\n\t\tLoad distribution from ', p['bunch_file'] ,' on MPI process: ', rank
+	path_to_distn = p['bunch_file']
 	bunch = bunch_from_matfile(path_to_distn)
 
 # Add Macrosize to bunch
@@ -223,7 +217,7 @@ paramsDict["bunch"]= bunch
 
 # Add space charge nodes
 #----------------------------------------------------
-if s['SliceBySlice']:
+if s['space_charge']:
 	print '\n\t\tAdding slice-by-slice space charge nodes on MPI process: ', rank
 	# Make a SC solver
 	calcsbs = SpaceChargeCalcSliceBySlice2D(s['GridSizeX'], s['GridSizeY'], s['GridSizeZ'], useLongitudinalKick=s['LongitudinalKick'])
