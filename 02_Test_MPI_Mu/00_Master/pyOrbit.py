@@ -44,10 +44,11 @@ from spacecharge import SpaceChargeCalcAnalyticGaussian
 from spacecharge import InterpolatedLineDensityProfile
 
 from lib.output_dictionary import *
-from lib.pyOrbit_GenerateInitialDistribution import *
 from lib.save_bunch_as_matfile import *
-from lib.pyOrbit_Tunespread_Calculator import *
 from lib.suppress_stdout import suppress_STDOUT
+from lib.pyOrbit_Bunch_Gather import *
+from lib.pyOrbit_Tunespread_Calculator import *
+from lib.pyOrbit_GenerateInitialDistribution import *
 readScriptPTC_noSTDOUT = suppress_STDOUT(readScriptPTC)
 
 # MPI stuff
@@ -104,6 +105,12 @@ mpi_mkdir_p('input')
 mpi_mkdir_p('bunch_output')
 mpi_mkdir_p('output')
 mpi_mkdir_p('lost')
+mpi_mkdir_p('Tune_Footprints')
+mpi_mkdir_p('Bunch_Profiles')
+mpi_mkdir_p('Bunch_Profiles/x_y')
+mpi_mkdir_p('Bunch_Profiles/x_xp')
+mpi_mkdir_p('Bunch_Profiles/y_yp')
+mpi_mkdir_p('Bunch_Profiles/z_dE')
 
 # Dictionary for simulation status
 #-----------------------------------------------------------------------
@@ -256,8 +263,6 @@ output.addParameter('intensity', lambda: bunchtwissanalysis.getGlobalMacrosize()
 output.addParameter('n_mp', lambda: bunchtwissanalysis.getGlobalCount())
 output.addParameter('D_x', lambda: bunchtwissanalysis.getDispersion(0))
 output.addParameter('D_y', lambda: bunchtwissanalysis.getDispersion(1))
-output.addParameter('mu_x', lambda: GetBunchMus(bunch)[0])
-output.addParameter('mu_y', lambda: GetBunchMus(bunch)[1])
 output.addParameter('bunchlength', lambda: get_bunch_length(bunch, bunchtwissanalysis))
 output.addParameter('dpp_rms', lambda: get_dpp(bunch, bunchtwissanalysis))
 output.addParameter('beta_x', lambda: bunchtwissanalysis.getBeta(0))
@@ -289,6 +294,22 @@ last_time = time.time()
 
 turn = -1
 bunchtwissanalysis.analyzeBunch(bunch)
+moments = BunchGather(bunch, turn, p) # Calculate bunch moments and kurtosis
+
+# Add moments and kurtosis
+output.addParameter('mu_x', lambda: moments['Mu_x'])
+output.addParameter('mu_xp', lambda: moments['Mu_xp'])
+output.addParameter('mu_y', lambda: moments['Mu_y'])
+output.addParameter('mu_yp', lambda: moments['Mu_yp'])
+output.addParameter('mu_z', lambda: moments['Mu_z'])
+output.addParameter('mu_dE', lambda: moments['Mu_dE'])
+output.addParameter('kurtosis_x', lambda: moments['Kurtosis_x'])
+output.addParameter('kurtosis_xp', lambda: moments['Kurtosis_xp'])
+output.addParameter('kurtosis_y', lambda: moments['Kurtosis_y'])
+output.addParameter('kurtosis_yp', lambda: moments['Kurtosis_yp'])
+output.addParameter('kurtosis_z', lambda: moments['Kurtosis_z'])
+output.addParameter('kurtosis_dE', lambda: moments['Kurtosis_dE'])
+
 output.addParameter('turn_time', lambda: time.strftime("%H:%M:%S"))
 output.addParameter('turn_duration', lambda: (time.time() - last_time))
 output.addParameter('cumulative_time', lambda: (time.time() - start_time))
@@ -300,7 +321,8 @@ for turn in range(sts['turn']+1, sts['turns_max']):
 	if not rank:	last_time = time.time()
 
 	Lattice.trackBunch(bunch, paramsDict)
-	bunchtwissanalysis.analyzeBunch(bunch)  # analyze twiss and emittance
+	bunchtwissanalysis.analyzeBunch(bunch)		# analyze twiss and emittance
+	moments = BunchGather(bunch, turn, p)			# Calculate bunch moments and kurtosis
 
 	if turn in sts['turns_update']:	sts['turn'] = turn
 

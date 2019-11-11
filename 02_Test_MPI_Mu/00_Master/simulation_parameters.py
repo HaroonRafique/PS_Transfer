@@ -31,16 +31,10 @@ parameters['rf_voltage']		= 0.0212942055190595723
 parameters['circumference']		= 2*np.pi*100
 parameters['phi_s']				= 0
 
-parameters['turns_max'] = int(2200)
-tu1 = range(-1, parameters['turns_max'], 200)
-tu2 = range(10, 100, 10) 
-tu3 = range(1, 9)
-tu = tu2 + tu1 + tu3 
-tu.append(874) # WS 172s
-tu.append(2185)# WS 175s
+parameters['turns_max'] = int(20)
 
-parameters['turns_print'] = sorted(tu)
-parameters['turns_update'] = sorted(tu)
+parameters['turns_print'] = range(1, parameters['turns_max'])
+parameters['turns_update'] = range(1, parameters['turns_max'])
 
 # PTC RF Table Parameters
 harmonic_factors = [1] # this times the base harmonic defines the RF harmonics (for SPS = 4620, PS 10MHz 7, 8, or 9)
