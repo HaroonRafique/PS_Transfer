@@ -40,7 +40,7 @@ parameters['beta'] 		= np.sqrt(parameters['gamma']**2-1)/parameters['gamma']
 c 						= 299792458
 parameters['sig_z'] 	= (parameters['beta'] * c * parameters['blength'])/4.
 
-parameters['turns_max'] = int(100)
+parameters['turns_max'] = int(30)
 parameters['turns_print'] = range(1, 101)
 parameters['turns_update'] = range(1, 101)
 

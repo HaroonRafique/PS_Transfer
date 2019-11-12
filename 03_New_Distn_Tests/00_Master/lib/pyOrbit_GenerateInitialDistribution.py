@@ -1004,7 +1004,7 @@ def generate_initial_dispersion_vector_distribution(dpp, parameters, Lattice, ou
 					xp[i] *= 1000.
 					y[i] *= 1000.
 					yp[i] *= 1000.
-					dE[i] /= 1.e6
+					# ~ dE[i] /= 1.e6
 					csv_writer.writerow([x[i], xp[i], y[i], yp[i], phi[i], dE[i]])
 
 		if summary_file:
