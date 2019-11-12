@@ -57,7 +57,8 @@ harmonic_factors = [1] # this times the base harmonic defines the RF harmonics (
 time = np.array([0,1,2])
 ones = np.ones_like(time)
 Ekin_GeV = 1.4*ones
-RF_voltage_MV = np.array([0.0212942055190595723*ones]).T # in MV
+# ~ RF_voltage_MV = np.array([0.0212942055190595723*ones]).T # in MV
+RF_voltage_MV = np.array([0.0*ones]).T # in MV
 RF_phase = np.array([np.pi*ones]).T
 
 RFparameters = {
