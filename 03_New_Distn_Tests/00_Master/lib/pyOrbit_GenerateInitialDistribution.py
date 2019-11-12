@@ -998,6 +998,7 @@ def generate_initial_dispersion_vector_distribution(dpp, parameters, Lattice, ou
 				y[i] = closedOrbity['y0']
 				yp[i] = closedOrbity['yp0']
 				phi[i] = 0.
+				# ~ print x[i], dE[i]
 
 				if outputFormat == 'Orbit':
 					x[i] *= 1000.
