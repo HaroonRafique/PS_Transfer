@@ -945,7 +945,7 @@ def generate_initial_x_distribution(n_sigma, parameters, Lattice,output_file = '
 
 	return output_file
 
-def generate_initial_dp_distribution(dpp, parameters, Lattice,output_file = 'Input/ParticleDistribution.in', summary_file = 'Input/ParticleDistribution_summary.txt', outputFormat='Orbit'):
+def generate_initial_dispersion_vector_distribution(dpp, parameters, Lattice, output_file = 'Input/ParticleDistribution.in', summary_file = 'Input/ParticleDistribution_summary.txt', outputFormat='Orbit'):
 
 	parameters['alphax0'] = Lattice.alphax0
 	parameters['betax0']  = Lattice.betax0
@@ -967,8 +967,8 @@ def generate_initial_dp_distribution(dpp, parameters, Lattice,output_file = 'Inp
 	twissY = TwissContainer(alpha = parameters['alphay0'], beta = parameters['betay0'], emittance = parameters['epsn_y'] / parameters['gamma'] / parameters['beta'])
 	dispersionx = {'etax0': parameters['etax0'], 'etapx0': parameters['etapx0']}
 	dispersiony = {'etay0': parameters['etay0'], 'etapy0': parameters['etapy0']}
-	closedOrbitx = {'x0': parameters['x0'], 'xp0': parameters['xp0']} 
-	closedOrbity = {'y0': parameters['y0'], 'yp0': parameters['yp0']} 
+	closedOrbitx = {'x0': parameters['x0'], 'xp0': parameters['xp0']}
+	closedOrbity = {'y0': parameters['y0'], 'yp0': parameters['yp0']}
 
 	# initialize particle arrays
 	x = np.zeros(parameters['n_macroparticles'])
@@ -992,12 +992,12 @@ def generate_initial_dp_distribution(dpp, parameters, Lattice,output_file = 'Inp
 			step = fullrange/parameters['n_macroparticles']
 
 			for i in range(parameters['n_macroparticles']):
-				x[i] = closedOrbitx['x0']
-				xp[i] = closedOrbitx['xp0']
+				dE[i] = i * float(2*dpp/float(parameters['n_macroparticles'])) * step - dpp
+				x[i] = closedOrbitx['x0'] + dispersionx['etax0'] * dE[i]
+				xp[i] = closedOrbitx['xp0'] + dispersionx['etapx0'] * dE[i]
 				y[i] = closedOrbity['y0']
 				yp[i] = closedOrbity['yp0']
 				phi[i] = 0.
-				dE[i] = i * float(2*dpp/float(parameters['n_macroparticles'])) * step - dpp
 
 				if outputFormat == 'Orbit':
 					x[i] *= 1000.

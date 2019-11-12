@@ -1,6 +1,0 @@
-#!/bin/bash
-cp 00_Initial_Distn/lib/pyOrbit_GenerateInitialDistribution.py 01_Gaussian_Distn/lib/
-cp 00_Initial_Distn/lib/pyOrbit_GenerateInitialDistribution.py 02_Tomo_Distn/lib/
-cp 00_Initial_Distn/lib/pyOrbit_GenerateInitialDistribution.py 03_Initial_Distn_Original_Lattice/lib/
-cp 00_Initial_Distn/lib/pyOrbit_GenerateInitialDistribution.py 04_Gaussian_Distn_Original_Lattice/lib/
-cp 00_Initial_Distn/lib/pyOrbit_GenerateInitialDistribution.py 05_Tomo_Distn_Original_Lattice/lib/

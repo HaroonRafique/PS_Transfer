@@ -18,12 +18,12 @@ parameters['intensity']			= 72.5E+10
 parameters['macrosize']			= parameters['intensity']/float(parameters['n_macroparticles'])
 
 parameters['gamma']				= 2.49253731343
-parameters['intensity']			= 72.5E+10
+parameters['intensity']			= 65E+10
 parameters['bunch_length']		= 140e-9
 parameters['blength']			= 140e-9
 parameters['epsn_x']			= 1E-6
-parameters['epsn_y']			= 1.2E-6
-parameters['dpp_rms']			= 8.7e-04
+parameters['epsn_y']			= 1E-6
+parameters['dpp_rms']			= 9e-04
 parameters['LongitudinalJohoParameter'] = 1.2
 parameters['LongitudinalCut'] 	= 2.4
 parameters['TransverseCut']		= 5
@@ -31,7 +31,7 @@ parameters['rf_voltage']		= 0.0212942055190595723
 parameters['circumference']		= 2*np.pi*100
 parameters['phi_s']				= 0
 
-parameters['turns_max'] = int(20)
+parameters['turns_max'] = int(30)
 
 parameters['turns_print'] = range(1, parameters['turns_max'])
 parameters['turns_update'] = range(1, parameters['turns_max'])
