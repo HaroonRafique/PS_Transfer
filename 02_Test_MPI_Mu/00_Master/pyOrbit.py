@@ -82,21 +82,6 @@ def GetTunesFromPTC():
 	os.system('rm TWISS_PTC_table.OUT')
 	return Qx, Qy
 
-# Function to return second moment (mu^2) of distribution
-# NOT MPI compatible - uses only bunch from rank 0
-def GetBunchMus(b, smooth=True):
-
-# Arrays to hold x and y data
-	x = []
-	y = []
-
-	for i in range(b.getSize()):
-		x.append(b.x(i))
-		y.append(b.y(i))
-
-# Calculate moments of the bunch
-	return moment(x, 2), moment(y, 2)
-
 # Create folder structure
 #-----------------------------------------------------------------------
 print '\n\t\tmkdir on MPI process: ', rank
@@ -283,26 +268,44 @@ output.addParameter('eff_alpha_x', lambda: bunchtwissanalysis.getEffectiveAlpha(
 output.addParameter('eff_alpha_y', lambda: bunchtwissanalysis.getEffectiveAlpha(1))
 output.addParameter('gamma', lambda: bunch.getSyncParticle().gamma())
 
-if os.path.exists(output_file):
-	output.import_from_matfile(output_file)
+if os.path.exists(output_file): output.import_from_matfile(output_file)
 
-# Track
+# Pre Track Bunch Twiss Analysis & Add BunchGather outputs
 #-----------------------------------------------------------------------
 print '\n\t\tStart tracking on MPI process: ', rank
-start_time = time.time()
-last_time = time.time()
-
 turn = -1
 bunchtwissanalysis.analyzeBunch(bunch)
 moments = BunchGather(bunch, turn, p) # Calculate bunch moments and kurtosis
 
 # Add moments and kurtosis
+output.addParameter('sig_x', lambda: moments['Sig_x'])
+output.addParameter('sig_xp', lambda: moments['Sig_xp'])
+output.addParameter('sig_y', lambda: moments['Sig_y'])
+output.addParameter('sig_yp', lambda: moments['Sig_yp'])
+output.addParameter('sig_z', lambda: moments['Sig_z'])
+output.addParameter('sig_dE', lambda: moments['Sig_dE'])
+
 output.addParameter('mu_x', lambda: moments['Mu_x'])
 output.addParameter('mu_xp', lambda: moments['Mu_xp'])
 output.addParameter('mu_y', lambda: moments['Mu_y'])
 output.addParameter('mu_yp', lambda: moments['Mu_yp'])
 output.addParameter('mu_z', lambda: moments['Mu_z'])
 output.addParameter('mu_dE', lambda: moments['Mu_dE'])
+
+output.addParameter('min_x', lambda: moments['Min_x'])
+output.addParameter('min_xp', lambda: moments['Min_xp'])
+output.addParameter('min_y', lambda: moments['Min_y'])
+output.addParameter('min_yp', lambda: moments['Min_yp'])
+output.addParameter('min_z', lambda: moments['Min_z'])
+output.addParameter('min_dE', lambda: moments['Min_dE'])
+
+output.addParameter('max_x', lambda: moments['Max_x'])
+output.addParameter('max_xp', lambda: moments['Max_xp'])
+output.addParameter('max_y', lambda: moments['Max_y'])
+output.addParameter('max_yp', lambda: moments['Max_yp'])
+output.addParameter('max_z', lambda: moments['Max_z'])
+output.addParameter('max_dE', lambda: moments['Max_dE'])
+
 output.addParameter('kurtosis_x', lambda: moments['Kurtosis_x'])
 output.addParameter('kurtosis_xp', lambda: moments['Kurtosis_xp'])
 output.addParameter('kurtosis_y', lambda: moments['Kurtosis_y'])
@@ -310,19 +313,31 @@ output.addParameter('kurtosis_yp', lambda: moments['Kurtosis_yp'])
 output.addParameter('kurtosis_z', lambda: moments['Kurtosis_z'])
 output.addParameter('kurtosis_dE', lambda: moments['Kurtosis_dE'])
 
+output.addParameter('kurtosis_x_6sig', lambda: moments['Kurtosis_x_6sig'])
+output.addParameter('kurtosis_xp_6sig', lambda: moments['Kurtosis_xp_6sig'])
+output.addParameter('kurtosis_y_6sig', lambda: moments['Kurtosis_y_6sig'])
+output.addParameter('kurtosis_yp_6sig', lambda: moments['Kurtosis_yp_6sig'])
+output.addParameter('kurtosis_z_6sig', lambda: moments['Kurtosis_z_6sig'])
+output.addParameter('kurtosis_dE_6sig', lambda: moments['Kurtosis_dE_6sig'])
+
+start_time = time.time()
+last_time = time.time()
 output.addParameter('turn_time', lambda: time.strftime("%H:%M:%S"))
 output.addParameter('turn_duration', lambda: (time.time() - last_time))
 output.addParameter('cumulative_time', lambda: (time.time() - start_time))
-start_time = time.time()
+
 output.update()
+
 print '\n\t\tstart time = ', start_time
 
+# Start Tracking
+#-----------------------------------------------------------------------
 for turn in range(sts['turn']+1, sts['turns_max']):
 	if not rank:	last_time = time.time()
 
 	Lattice.trackBunch(bunch, paramsDict)
-	bunchtwissanalysis.analyzeBunch(bunch)		# analyze twiss and emittance
-	moments = BunchGather(bunch, turn, p)			# Calculate bunch moments and kurtosis
+	bunchtwissanalysis.analyzeBunch(bunch)	# analyze twiss and emittance
+	moments = BunchGather(bunch, turn, p)	# Calculate bunch moments and kurtosis
 
 	if turn in sts['turns_update']:	sts['turn'] = turn
 

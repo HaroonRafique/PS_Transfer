@@ -103,7 +103,7 @@ class resonance_lines(object):
 def BunchGather(bunch, turn, p, plot_footprint=False):
 
 	b = bunch
-	verbose = True
+	verbose = False
 
 	# take the MPI Communicator from bunch: it could be different from MPI_COMM_WORLD
 	comm = b.getMPIComm()
@@ -181,10 +181,10 @@ def BunchGather(bunch, turn, p, plot_footprint=False):
 #                Plot tune footprint with histograms                   #
 ########################################################################
 
-	if rank is 0:
-		print 'Rank: ', rank
+	if rank is main_rank:
+		# ~ print 'Rank: ', rank
 		if turn >=0:
-			print 'Turn: ', turn
+			# ~ print 'Turn: ', turn
 			if plot_footprint:
 				if verbose: print 'BunchGather:: Plot tune footprint on rank', rank
 			
@@ -256,21 +256,75 @@ def BunchGather(bunch, turn, p, plot_footprint=False):
 				f.savefig(savename, dpi=100)
 				plt.close(f)
 
-	# Later add something to cut large amplitude particles to reduce noise for kurtosis calculation
-	outputs = {
-		'Mu_x' : moment(particles['x'], 2),
-		'Mu_xp' : moment(particles['xp'], 2),
-		'Mu_y' : moment(particles['y'], 2),
-		'Mu_yp' : moment(particles['yp'], 2),
-		'Mu_z' : moment(particles['z'], 2),
-		'Mu_dE' : moment(particles['dE'], 2),
-		'Kurtosis_x' : kurtosis(particles['x'], fisher=True, nan_policy='omit'),
-		'Kurtosis_xp' : kurtosis(particles['xp'], fisher=True, nan_policy='omit'),
-		'Kurtosis_y' : kurtosis(particles['y'], fisher=True, nan_policy='omit'),
-		'Kurtosis_yp' : kurtosis(particles['yp'], fisher=True, nan_policy='omit'),
-		'Kurtosis_z' : kurtosis(particles['z'], fisher=True, nan_policy='omit'),
-		'Kurtosis_dE' : kurtosis(particles['dE'], fisher=True, nan_policy='omit')
-	}
+	outputs = dict()
+	if rank is main_rank:
+		x = np.array(particles['x'])
+		xp = np.array(particles['xp'])
+		y = np.array(particles['y'])
+		yp = np.array(particles['yp'])
+		z = np.array(particles['z'])
+		dE = np.array(particles['dE'])
+
+		mu_x = moment(x, 2)
+		mu_xp = moment(xp, 2)
+		mu_y = moment(y, 2)
+		mu_yp = moment(yp, 2)
+		mu_z = moment(z, 2)
+		mu_dE = moment(dE, 2)
+
+		sig_x = np.sqrt(mu_x)
+		sig_xp = np.sqrt(mu_xp)
+		sig_y = np.sqrt(mu_y)
+		sig_yp = np.sqrt(mu_yp)
+		sig_z = np.sqrt(mu_z)
+		sig_dE = np.sqrt(mu_dE)
+
+		x_6_sig = x[np.where( (x >= -6*sig_x) & (x <= 6*sig_x) )]
+		xp_6_sig = xp[np.where( (xp >= -6*sig_xp) & (xp <= 6*sig_xp) )]
+		y_6_sig = y[np.where( (y >= -6*sig_y) & (y <= 6*sig_y) )]
+		yp_6_sig = yp[np.where( (yp >= -6*sig_yp) & (yp <= 6*sig_yp) )]
+		z_6_sig = z[np.where( (z >= -6*sig_z) & (z <= 6*sig_z) )]
+		dE_6_sig = dE[np.where( (dE >= -6*sig_dE) & (dE <= 6*sig_dE) )]
+
+		# Later add something to cut large amplitude particles to reduce noise for kurtosis calculation
+		outputs = {
+			'Mu_x' : mu_x,
+			'Mu_xp' : mu_xp,
+			'Mu_y' : mu_y,
+			'Mu_yp' : mu_yp,
+			'Mu_z' : mu_z,
+			'Mu_dE' : mu_dE,
+			'Sig_x' : sig_x,
+			'Sig_xp' : sig_xp,
+			'Sig_y' : sig_y,
+			'Sig_yp' : sig_yp,
+			'Sig_z' : sig_z,
+			'Sig_dE' : sig_dE,
+			'Max_x' : np.max(x),
+			'Max_xp' : np.max(xp),
+			'Max_y' : np.max(y),
+			'Max_yp' : np.max(yp),
+			'Max_z' : np.max(z),
+			'Max_dE' : np.max(dE),
+			'Min_x' : np.min(x),
+			'Min_xp' : np.min(xp),
+			'Min_y' : np.min(y),
+			'Min_yp' : np.min(yp),
+			'Min_z' : np.min(z),
+			'Min_dE' : np.min(dE),
+			'Kurtosis_x' : kurtosis(x, fisher=True, nan_policy='omit'),
+			'Kurtosis_xp' : kurtosis(xp, fisher=True, nan_policy='omit'),
+			'Kurtosis_y' : kurtosis(y, fisher=True, nan_policy='omit'),
+			'Kurtosis_yp' : kurtosis(yp, fisher=True, nan_policy='omit'),
+			'Kurtosis_z' : kurtosis(z, fisher=True, nan_policy='omit'),
+			'Kurtosis_dE' : kurtosis(dE, fisher=True, nan_policy='omit'),
+			'Kurtosis_x_6sig' : kurtosis(x_6_sig, fisher=True, nan_policy='omit'),
+			'Kurtosis_xp_6sig' : kurtosis(xp_6_sig, fisher=True, nan_policy='omit'),
+			'Kurtosis_y_6sig' : kurtosis(y_6_sig, fisher=True, nan_policy='omit'),
+			'Kurtosis_yp_6sig' : kurtosis(yp_6_sig, fisher=True, nan_policy='omit'),
+			'Kurtosis_z_6sig' : kurtosis(z_6_sig, fisher=True, nan_policy='omit'),
+			'Kurtosis_dE_6sig' : kurtosis(dE_6_sig, fisher=True, nan_policy='omit')
+		}
 
 
 	return outputs
