@@ -18,7 +18,7 @@ parameters['bunch_file']		= '../../01_Generate_Distn/Bunches/PyORBIT_Tomo_Bunch_
 parameters['intensity']			= 72.5E+10
 parameters['macrosize']			= parameters['intensity']/float(parameters['n_macroparticles'])
 
-parameters['n_macroparticles']	= int(101)
+parameters['n_macroparticles']	= int(41)
 parameters['gamma']				= 2.49253731343
 parameters['intensity']			= 72.5E+10
 parameters['bunch_length']		= 140e-9
