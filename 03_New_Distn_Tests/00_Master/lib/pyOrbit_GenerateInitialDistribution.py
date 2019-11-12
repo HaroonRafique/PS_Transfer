@@ -951,8 +951,10 @@ def generate_initial_dispersion_vector_distribution(dpp, parameters, Lattice, ou
 	parameters['betax0']  = Lattice.betax0
 	parameters['alphay0'] = Lattice.alphay0
 	parameters['betay0']  = Lattice.betay0
-	parameters['etax0']   = Lattice.etax0
-	parameters['etapx0']  = Lattice.etapx0
+	# ~ parameters['etax0']   = Lattice.etax0
+	parameters['etax0']   = 2.633
+	# ~ parameters['etapx0']  = Lattice.etapx0
+	parameters['etapx0']  = -0.1104
 	parameters['etay0']   = Lattice.etay0
 	parameters['etapy0']  = Lattice.etapy0
 	parameters['x0']      = Lattice.orbitx0
@@ -998,7 +1000,7 @@ def generate_initial_dispersion_vector_distribution(dpp, parameters, Lattice, ou
 				y[i] = closedOrbity['y0']
 				yp[i] = closedOrbity['yp0']
 				phi[i] = 0.
-				# ~ print x[i], dE[i]
+				print x[i], dE[i]
 
 				if outputFormat == 'Orbit':
 					x[i] *= 1000.
