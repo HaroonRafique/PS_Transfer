@@ -989,10 +989,10 @@ def generate_initial_dispersion_vector_distribution(dpp, parameters, Lattice, ou
 			csv_writer = csv.writer(fid, delimiter=' ')
 
 			fullrange = 2*dpp
-			step = fullrange/parameters['n_macroparticles']
+			step = fullrange/(parameters['n_macroparticles']-1)
 
 			for i in range(parameters['n_macroparticles']):
-				dE[i] = i * float(2*dpp/float(parameters['n_macroparticles'])) * step - dpp
+				dE[i] = (i * step) - dpp
 				x[i] = closedOrbitx['x0'] + dispersionx['etax0'] * dE[i]
 				xp[i] = closedOrbitx['xp0'] + dispersionx['etapx0'] * dE[i]
 				y[i] = closedOrbity['y0']
