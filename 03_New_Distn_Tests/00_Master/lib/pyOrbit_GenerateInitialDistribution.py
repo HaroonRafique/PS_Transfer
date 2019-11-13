@@ -998,7 +998,7 @@ def generate_initial_dispersion_vector_distribution(dpp, parameters, Lattice, ou
 			for i in range(parameters['n_macroparticles']):
 				dE[i] = (i * step) - dpp
 				x[i] = closedOrbitx['x0'] + dispersionx['etax0'] * dE[i]
-				xp[i] = closedOrbitx['xp0'] + dispersionx['etapx0'] * dE[i]
+				xp[i] = closedOrbitx['xp0'] + np.abs(dispersionx['etapx0']) * dE[i]
 				y[i] = closedOrbity['y0']
 				yp[i] = closedOrbity['yp0']
 				phi[i] = 0.
