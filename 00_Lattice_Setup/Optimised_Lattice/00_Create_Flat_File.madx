@@ -17,13 +17,24 @@ call, file="New_Lattice/macros.ptc";
 beam, particle=proton, pc=2.14;
 BRHO      := BEAM->PC * 3.3356;
 
-RFV := 0.021;
+!RFV := 0.021;
+RFV := 0.0;
 
 tune_x = 0.218;
 tune_y = 0.24;
+
+/*******************************************************************************
+**                           Injection bumpers                                **
+** 		      values taken directly from LSA on 22.07.2019	     			  **
+*******************************************************************************/
+
+BSW40 =  0.00441284;
+BSW42 = -0.01552841;
+BSW43 =  0.01268790;
+BSW44 = -0.00460768;
  
 /*******************************************************************************
-**                        SBEND K1 and multipoles in MUs                      **
+**         SBEND K1 and multipoles in MUs from ps_inj_lhc.str                 **
 *******************************************************************************/
 k1_f               =      0.05701797199 ;
 k1_d               =     -0.05720665382 ;
@@ -34,16 +45,15 @@ mpk2_j             =      0.039347 ;
 mpk3_f             =      0.1021894047 ;
 mpk3_d             =     -0.1012728309 ;
 
+
+!kf                 =    -0.001921765195 ;
+!kd                 =     0.003386137627 ;
+
 /***********************************************************************
 **        From Matt's ps_inj_lhc_leq_matching_QX218_QY240.dat         **
 ***********************************************************************/
 kf                 =    -0.001747577788 ;
 kd                 =      0.00350801661 ;
-
-BSW40 := 0.00441284;
-BSW42 := -0.01552841;
-BSW43 := 0.01268790;
-BSW44 := -0.00460768;
 
 /***********************************************************************
 **                       START at BSG52 SEM Grid                      **
@@ -52,10 +62,10 @@ seqedit,sequence = PS;
 	flatten;
 endedit;
 
-seqedit,sequence = PS;
-	call, file = 'New_Lattice/remove_elements.seq';
-	remove, element=SELECTED;
-endedit;
+!seqedit,sequence = PS;
+!	call, file = 'New_Lattice/remove_elements.seq';
+!	remove, element=SELECTED;
+!endedit;
 
 seqedit, sequence=PS;
 	flatten;
