@@ -945,7 +945,7 @@ def generate_initial_x_distribution(n_sigma, parameters, Lattice,output_file = '
 
 	return output_file
 
-def generate_initial_dispersion_vector_distribution(dpp, parameters, Lattice, output_file = 'Input/ParticleDistribution.in', summary_file = 'Input/ParticleDistribution_summary.txt', outputFormat='Orbit'):
+def generate_initial_dispersion_vector_distribution(parameters, Lattice, dpp=2E-3, output_file = 'Input/ParticleDistribution.in', summary_file = 'Input/ParticleDistribution_summary.txt', outputFormat='Orbit'):
 
 	parameters['alphax0'] = Lattice.alphax0
 	parameters['betax0']  = Lattice.betax0
@@ -998,7 +998,8 @@ def generate_initial_dispersion_vector_distribution(dpp, parameters, Lattice, ou
 			for i in range(parameters['n_macroparticles']):
 				dE[i] = (i * step) - dpp
 				x[i] = closedOrbitx['x0'] + dispersionx['etax0'] * dE[i]
-				xp[i] = closedOrbitx['xp0'] + np.abs(dispersionx['etapx0']) * dE[i]
+				# ~ xp[i] = closedOrbitx['xp0'] + np.abs(dispersionx['etapx0']) * dE[i]
+				xp[i] = dispersionx['etapx0'] * dE[i]
 				y[i] = closedOrbity['y0']
 				yp[i] = closedOrbity['yp0']
 				phi[i] = 0.
