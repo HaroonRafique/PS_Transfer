@@ -2,7 +2,6 @@ import numpy as np
 
 parameters = {}
 
-
 parameters['n_macroparticles']		= int(0.5E3) #int(50E3) # int(0.5E6)
 
 # Include machine (PS), tunes, lattice start position (BWS65H) for bunch output file label
