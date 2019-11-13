@@ -284,10 +284,6 @@ output.addParameter('eff_epsn_y', lambda: bunchtwissanalysis.getEffectiveEmittan
 output.addParameter('eff_alpha_x', lambda: bunchtwissanalysis.getEffectiveAlpha(0))
 output.addParameter('eff_alpha_y', lambda: bunchtwissanalysis.getEffectiveAlpha(1))
 output.addParameter('gamma', lambda: bunch.getSyncParticle().gamma())
-output.addParameter('orbit_x_min', lambda: PTC_Twiss.GetMinParameter('orbit_x', turn))
-output.addParameter('orbit_x_max', lambda: PTC_Twiss.GetMaxParameter('orbit_x', turn))
-output.addParameter('orbit_y_min', lambda: PTC_Twiss.GetMinParameter('orbit_y', turn))
-output.addParameter('orbit_y_max', lambda: PTC_Twiss.GetMaxParameter('orbit_y', turn))
 
 if os.path.exists(output_file): output.import_from_matfile(output_file)
 
@@ -346,6 +342,15 @@ last_time = time.time()
 output.addParameter('turn_time', lambda: time.strftime("%H:%M:%S"))
 output.addParameter('turn_duration', lambda: (time.time() - last_time))
 output.addParameter('cumulative_time', lambda: (time.time() - start_time))
+
+
+# PTC_Twiss must be updated before updating output
+PTC_Twiss.UpdatePTCTwiss(Lattice, turn)
+
+output.addParameter('orbit_x_min', lambda: PTC_Twiss.GetMinParameter('orbit_x', turn))
+output.addParameter('orbit_x_max', lambda: PTC_Twiss.GetMaxParameter('orbit_x', turn))
+output.addParameter('orbit_y_min', lambda: PTC_Twiss.GetMinParameter('orbit_y', turn))
+output.addParameter('orbit_y_max', lambda: PTC_Twiss.GetMaxParameter('orbit_y', turn))
 
 output.update()
 
