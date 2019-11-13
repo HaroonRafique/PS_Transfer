@@ -1,12 +1,11 @@
-import math
-import sys
-import time
-import orbit_mpi
-import timeit
-import numpy as np
-import scipy.io as sio
-from scipy.stats import moment
 import os
+import sys
+import math
+import time
+import pickle
+import timeit
+import orbit_mpi
+import numpy as np
 
 # Use switches in simulation_parameters.py in current folder
 #-------------------------------------------------------------
@@ -49,6 +48,8 @@ from lib.suppress_stdout import suppress_STDOUT
 from lib.pyOrbit_Bunch_Gather import *
 from lib.pyOrbit_Tunespread_Calculator import *
 from lib.pyOrbit_GenerateInitialDistribution import *
+from lib.pyOrbit_PrintLatticeFunctionsFromPTC import *
+from lib.pyOrbit_PTCLatticeFunctionsDictionary import *
 readScriptPTC_noSTDOUT = suppress_STDOUT(readScriptPTC)
 
 # MPI stuff
@@ -90,16 +91,26 @@ mpi_mkdir_p('input')
 mpi_mkdir_p('bunch_output')
 mpi_mkdir_p('output')
 mpi_mkdir_p('lost')
+mpi_mkdir_p('All_Twiss')
 
 # Dictionary for simulation status
 #-----------------------------------------------------------------------
-import pickle # HAVE TO CLEAN THIS FILE BEFORE RUNNING A NEW SIMULATION
+# HAVE TO CLEAN THIS FILE BEFORE RUNNING A NEW SIMULATION
 status_file = 'input/simulation_status.pkl'
 if not os.path.exists(status_file):
 	sts = {'turn': -1}
 else:
 	with open(status_file) as fid:
 		sts = pickle.load(fid)
+
+# Lattice function dictionary to print closed orbit
+#-----------------------------------------------------------------------
+ptc_dictionary_file = 'input/ptc_dictionary.pkl'
+if not os.path.exists(ptc_dictionary_file):        
+	PTC_Twiss = PTCLatticeFunctionsDictionary()
+else:
+	with open(ptc_dictionary_file) as sid:
+		PTC_Twiss = pickle.load(sid)
 
 # Generate PTC RF table
 #-----------------------------------------------------------------------
@@ -273,6 +284,10 @@ output.addParameter('eff_epsn_y', lambda: bunchtwissanalysis.getEffectiveEmittan
 output.addParameter('eff_alpha_x', lambda: bunchtwissanalysis.getEffectiveAlpha(0))
 output.addParameter('eff_alpha_y', lambda: bunchtwissanalysis.getEffectiveAlpha(1))
 output.addParameter('gamma', lambda: bunch.getSyncParticle().gamma())
+output.addParameter('orbit_x_min', lambda: PTC_Twiss.GetMinParameter('orbit_x', turn))
+output.addParameter('orbit_x_max', lambda: PTC_Twiss.GetMaxParameter('orbit_x', turn))
+output.addParameter('orbit_y_min', lambda: PTC_Twiss.GetMinParameter('orbit_y', turn))
+output.addParameter('orbit_y_max', lambda: PTC_Twiss.GetMaxParameter('orbit_y', turn))
 
 if os.path.exists(output_file): output.import_from_matfile(output_file)
 
@@ -339,11 +354,15 @@ print '\n\t\tstart time = ', start_time
 # Start Tracking
 #-----------------------------------------------------------------------
 for turn in range(sts['turn']+1, sts['turns_max']):
-	if not rank:	last_time = time.time()
+	if not rank:
+		last_time = time.time()
+		PTC_Twiss.UpdatePTCTwiss(Lattice, turn)
 
 	Lattice.trackBunch(bunch, paramsDict)
 	bunchtwissanalysis.analyzeBunch(bunch)	# analyze twiss and emittance
 	moments = BunchGather(bunch, turn, p)	# Calculate bunch moments and kurtosis
+	readScriptPTC_noSTDOUT("PTC/update-twiss.ptc") # this is needed to correclty update the twiss functions in all lattice nodes in updateParamsPTC
+	updateParamsPTC(Lattice,bunch) 			# to update bunch energy and twiss functions
 
 	if turn in sts['turns_update']:	sts['turn'] = turn
 
@@ -357,3 +376,12 @@ for turn in range(sts['turn']+1, sts['turns_max']):
 		if not rank:
 			with open(status_file, 'w') as fid:
 				pickle.dump(sts, fid)
+
+# make sure simulation terminates properly
+orbit_mpi.MPI_Barrier(comm)
+
+# Dump orbit extrema files and twiss file for each turn
+#-----------------------------------------------------------------------
+if not rank:
+	PTC_Twiss.PrintOrbitExtrema('.')
+	PTC_Twiss.PrintAllPTCTwiss('All_Twiss')
