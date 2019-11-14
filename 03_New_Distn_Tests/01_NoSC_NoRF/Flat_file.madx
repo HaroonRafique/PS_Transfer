@@ -1,0 +1,189 @@
+TITLE, "Flat file generation for PTC-PyORBIT";
+
+/******************************************************************
+ * MAD-X PS Optics
+ **
+ ** Injection energy
+ ** Haroon Rafique 09.10.19
+ **
+ ** Based on the work of:
+ ** Alexander Huschauer  02/09/16
+ ******************************************************************/
+
+tune_x = 0.21;
+tune_y = 0.10;
+
+/***********************************************************************
+ * INITIALIZATION
+ * First we call the files describing the machine, in this case we use 
+ * the CERN proton synchrotron (PS).
+ **********************************************************************/
+call,  file = './../../Lattice_LowChroma/PS_new.ele';
+call,  file = './../../Lattice_LowChroma/PS_new.seq';
+call,  file = './../../Lattice_LowChroma/PS_new.str';
+call,  file = './../../Lattice_LowChroma/PS_2013.aper';
+call,  file = './../../Lattice_LowChroma/macros.ptc';
+
+/***********************************************************************
+ * RFV can be used to manually seet the RF cavity voltage.
+ * This is overridden by a PTC RF table (called from PyORBIT).
+ **********************************************************************/
+RFV = 0.021;
+
+/***********************************************************************
+ * Create a MAD-X beam and tell MAD-X which accelerator lattice to use.
+ **********************************************************************/
+beam, particle=proton, pc=pc;
+use, sequence=PS;
+
+/***********************************************************************
+ * Here we manually edit the sequence (lattice) to install a zero length
+ * beam wire scanner at the start of region 64. We then save the new 
+ * sequence to a file.
+ **********************************************************************/
+PR.BWSV64     :  MONITOR  , L = 0.0; 
+
+seqedit, sequence=PS;
+	flatten;
+	install, element=PR.BWSV64, at=0.4, from=PS64$START;
+	flatten;
+endedit;
+
+use, sequence=PS;
+
+seqedit, sequence=PS;
+	flatten;
+	cycle , start=PR.BWSV64;
+	flatten;
+endedit;
+
+save,file='./PS.seq';
+
+use, sequence=PS;
+
+value, pc, beam->pc, beam->energy;
+
+/***********************************************************************
+ * Low chroma setup
+ **********************************************************************/
+ 
+ /**********************************************************************
+**                        Multipoles in MUs                           **
+***********************************************************************/
+pfki1f             =    -0.002562382254 ;
+pfki2f             =      0.02189512262 ;
+pfki3f             =       0.1160601827 ;
+
+pfki1d             =     0.002381835717 ;
+pfki2d             =     -0.02318695986 ;
+pfki3d             =       -0.121350943 ;
+
+/******************************************************************
+* Polynomials obtained from measurements of non-linear chromaticity
+*                on LHC flat bottom - 01.11.2018
+ ******************************************************************/
+!2nd dedree polynomial
+!Qx = 0.21 + 0.77 x + 60.1 x^2
+!Qy = 0.32 - 2.85 x + 10.5 x^2
+
+MQx0 :=  0.21;
+MQx1 := 0.77;
+MQx2 := 60.1;
+
+MQy0 :=  0.32;
+MQy1 := -2.85;
+MQy2 := 10.5;
+
+kf = 0.;
+kd = 0.;
+
+/******************************************************************
+ * Multipole matching
+ ******************************************************************/
+use, sequence=PS;
+match,use_macro;
+	vary,name=PFKI1F;
+	vary,name=PFKI1D;
+	vary,name=PFKI2F;
+	vary,name=PFKI2D;
+	vary,name=PFKI3F;
+	vary,name=PFKI3D;
+	use_macro,name=ptc_chrom_macro;
+	constraint,expr= qx0= 1*MQx0;
+	constraint,expr= qy0= 1*MQy0;
+	constraint,expr= qx1= 1*MQx1;
+	constraint,expr= qy1= 1*MQy1;
+	constraint,expr= qx2= 2*MQx2;
+	constraint,expr= qy2= 2*MQy2;
+jacobian,calls=50000,bisec=3;
+ENDMATCH;
+
+value,PFKI1F,PFKI2F,PFKI3F;
+value,PFKI1D,PFKI2D,PFKI3D;
+
+Assign, echo=terminal;
+
+value,qx0,qx1,qx2/2;
+value,qy0,qy1,qy2/2;
+ 
+/***********************************************************************
+ * Next we use a ptc macro to match the tunes in the lattice to
+ * desired values tune_x and tune_y.
+ *
+ * Using model=2, exact=true is recommended.
+ **********************************************************************/
+ 
+ptc_twiss_tune_macro_false_split: macro={
+	ptc_create_universe;
+	ptc_create_layout, time=true, model=2, exact=true, method=6, nst=3;
+	ptc_twiss, closed_orbit, table = ptc_twiss, icase=56, no=2, summary_table=ptc_twiss_summary;
+	qx0=table(ptc_twiss_summary,Q1);
+	qy0=table(ptc_twiss_summary,Q2);
+	xcomax0=table(ptc_twiss_summary,XCOMAX);
+	value, qx0, qy0;
+	ptc_end;
+};
+
+use, sequence=PS;
+match, use_macro;
+	vary, name=iqf, step=1.0E-6;
+	vary, name=iqd, step=1.0E-6;
+	USE_MACRO, name=ptc_twiss_tune_macro_false_split;
+	CONSTRAINT, expr=  table(ptc_twiss_summary,Q1)= tune_x;
+	CONSTRAINT, expr=  table(ptc_twiss_summary,Q2)= tune_y;
+	JACOBIAN,calls=10000,bisec=3,TOLERANCE=1.0E-21;
+ENDMATCH;
+value, IQF, IQD;
+
+/***********************************************************************
+ * Next we use the PTC script resplit.ptc - this is used to split
+ * defined elements (dipole, quadrupole, sextupole families etc) in
+ * order to introduce space charge nodes inside their length. See the
+ * file for further information. Then the flat file is generated and 
+ * saved.
+ **********************************************************************/
+ 
+ptc_create_universe;
+ptc_create_layout,time=true, model=2, exact=true, method=6, nst=3;
+ptc_script, file="PTC/resplit.ptc";
+ptc_script, file="PTC/print_flat_file.ptc";
+select, flag=ptc_twiss, clear; 
+select, flag=ptc_twiss, column=name, s, betx, px, bety, py, disp3, disp3p, disp1, disp1p, x, y;
+ptc_twiss, icase=5, no=4, deltap_dependency, closed_orbit, file, table=ptc_twiss;
+ptc_end;
+
+/***********************************************************************
+ * Output a MAD-X TFS table for use with the tunespread calculator.
+ **********************************************************************/
+
+select, flag=twiss, clear;
+select, flag=twiss, column=NAME, KEYWORD, S, BETX, BETY, ALFX, ALFY, MUX, MUY, DX, DY, X, Y;
+set,    format="12.6f";
+twiss,  sequence=PS, file=madx_twiss.tfs, save;
+
+madx_twiss_file_macro(nnn): macro={
+	select, flag=twiss, clear;
+	select, flag=twiss, column=NAME, KEYWORD, S, BETX, BETY, ALFX, ALFY, MUX, MUY, DX, DY, X, Y;
+	set,    format="12.6f";
+	twiss,  sequence=PS, file=nnn.tfs, save;
+}
