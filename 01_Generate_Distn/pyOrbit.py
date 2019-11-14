@@ -140,12 +140,12 @@ def Create_Bunch(Lattice, p=None, TwissDict=None, label=None, DistType = 'Gaussi
 		p = {}
 		p['n_macroparticles']	= int(0.5E6)
 		p['gamma']			= 2.49253731343
-		p['intensity']			= 72.5E+10
+		p['intensity']			= 65E+10
 		p['bunch_length']		= 140e-9
 		p['blength']			= 140e-9
 		p['epsn_x']				= 1E-6
-		p['epsn_y']				= 1.2E-6
-		p['dpp_rms']			= 8.7e-04
+		p['epsn_y']				= 1E-6
+		p['dpp_rms']			= 9e-04
 		p['tomo_file']			= 'PyORBIT_Tomo_file_MD4224_HB.mat'
 		p['LongitudinalJohoParameter'] = 1.2
 		p['LongitudinalCut'] = 2.4
@@ -380,12 +380,12 @@ for node in Lattice.getNodes():
 ########################################################################
 
 p['gamma']				= 2.49253731343
-p['intensity']			= 72.5E+10
+p['intensity']			= 65E+10
 p['bunch_length']		= 140e-9
 p['blength']			= 140e-9
 p['epsn_x']				= 1E-6
-p['epsn_y']				= 1.2E-6
-p['dpp_rms']			= 8.7e-04
+p['epsn_y']				= 1E-6
+p['dpp_rms']			= 9e-04
 p['TransverseCut']		= 5
 p['rf_voltage']			= 0.0212942055190595723
 p['circumference']		= 2*np.pi*100

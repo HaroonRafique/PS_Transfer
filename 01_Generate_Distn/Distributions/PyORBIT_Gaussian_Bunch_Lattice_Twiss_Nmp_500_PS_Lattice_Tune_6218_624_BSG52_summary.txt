@@ -20,5 +20,5 @@ alphay0 = 0.0217557514807
 etay0 = 0.0
 etapy0 = 0.0
 epsn_x = 1e-06
-epsn_y = 1.2e-06
+epsn_y = 1e-06
 TransverseCut = 5
