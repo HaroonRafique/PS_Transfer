@@ -168,18 +168,31 @@ if sts['turn'] < 0:
 	for i in p:
 		print '\t', i, '\t = \t', p[i]
 
-	if s['CreateDistn']:
 # Create the initial distribution 
 #-----------------------------------------------------------------------
+	if s['CreateDistn']:
+		Dx = 0.
+		Dxp = 0.
+		if s['Optics'] is 'Lattice':
+			Dx  = Lattice.etax0
+			Dxp = Lattice.etapx0
+		elif s['Optics'] is 'Matched':
+			Dx  = 2.633
+			Dxp = -0.1104
+		elif s['Optics'] is 'Rematched':
+			Dx  = 2.6829
+			Dxp = -0.0221
+
+
 		print '\n\t\tgenerate_initial_distribution on MPI process: ', rank
-		Particle_distribution_file = generate_initial_dispersion_vector_distribution(p, Lattice, 2E-3, output_file='input/ParticleDistribution.in', summary_file='input/ParticleDistribution_summary.txt')
+		Particle_distribution_file = generate_initial_dispersion_vector_distribution(p, Lattice, 2E-3, Dx, Dxp, output_file='input/ParticleDistribution.in', summary_file='input/ParticleDistribution_summary.txt')
 
 		print '\n\t\tbunch_orbit_to_pyorbit on MPI process: ', rank
 		bunch_orbit_to_pyorbit(paramsDict["length"], kin_Energy, Particle_distribution_file, bunch, p['n_macroparticles'] + 1) #read in only first N_mp particles.
 
-	else:
 # OR load bunch from file
 #-----------------------------------------------------------------------
+	else:
 		print '\n\t\tLoad distribution from ', p['bunch_file'] ,' on MPI process: ', rank
 		path_to_distn = p['bunch_file']
 		bunch = bunch_from_matfile(path_to_distn)

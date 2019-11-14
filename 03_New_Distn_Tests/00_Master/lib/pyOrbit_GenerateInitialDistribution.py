@@ -945,18 +945,20 @@ def generate_initial_x_distribution(n_sigma, parameters, Lattice,output_file = '
 
 	return output_file
 
-def generate_initial_dispersion_vector_distribution(parameters, Lattice, dpp=2E-3, output_file = 'Input/ParticleDistribution.in', summary_file = 'Input/ParticleDistribution_summary.txt', outputFormat='Orbit'):
-
+def generate_initial_dispersion_vector_distribution(parameters, Lattice, dpp=2E-3, Dx=None, Dxp=None, output_file = 'Input/ParticleDistribution.in', summary_file = 'Input/ParticleDistribution_summary.txt', outputFormat='Orbit'):
+	if Dx is None: 
+		parameters['etax0']   = Lattice.etax0
+	else:
+		parameters['etax0']   = Dx
+	if Dxp is None: 
+		parameters['etapx0']   = Lattice.etapx0
+	else:
+		parameters['etapx0']   = Dxp
+		
 	parameters['alphax0'] = Lattice.alphax0
 	parameters['betax0']  = Lattice.betax0
 	parameters['alphay0'] = Lattice.alphay0
 	parameters['betay0']  = Lattice.betay0
-	# ~ parameters['etax0']   = Lattice.etax0
-	# ~ parameters['etax0']   = 2.633
-	parameters['etax0']   = 2.683
-	# ~ parameters['etapx0']  = Lattice.etapx0
-	# ~ parameters['etapx0']  = -0.1104
-	parameters['etapx0']  = -0.022
 	parameters['etay0']   = Lattice.etay0
 	parameters['etapy0']  = Lattice.etapy0
 	parameters['x0']      = Lattice.orbitx0
