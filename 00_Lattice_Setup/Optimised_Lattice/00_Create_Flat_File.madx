@@ -95,8 +95,8 @@ order_of_integrator = 6;
 ! avoids quadrupole feed-down effects leading to closed orbit distortions
 exact_flag = true;
 
-! time=true: every derivative wrt dp/p needs to be multiplied by the relativistic beta DQ1, DISP1,...)
-! time=false: forget about beta and take the value as it is. 
+! time=true: every derivative wrt dp/p needs to be multiplied by the relativistic beta DQ1, DISP1,...) required for flat file generation!
+! time=false: forget about beta and take the value as it is - use for PTC_Twiss 
 time_flag = false;
 
 integration_steps_per_element = 5; ! 3;
@@ -162,7 +162,7 @@ ptc_end;
  * saved.
  **********************************************************************/
 ptc_create_universe;
-ptc_create_layout,time=false, model=propagation_method, exact=true, method=order_of_integrator, nst=integration_steps_per_element;
+ptc_create_layout,time=true, model=propagation_method, exact=true, method=order_of_integrator, nst=integration_steps_per_element;
 ptc_script, file="./resplit.ptc";
 ptc_script, file="./print_flat_file.ptc";
 select, flag=ptc_twiss, clear; 
