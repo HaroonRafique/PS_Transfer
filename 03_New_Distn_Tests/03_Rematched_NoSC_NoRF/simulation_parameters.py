@@ -44,7 +44,7 @@ parameters['turns_print'] = range(1, parameters['turns_max'])
 parameters['turns_update'] = range(1, parameters['turns_max'])
 
 switches = {
-	'Optics':		'Rematched', #'Matched', #'Lattice',
+	'Optics':		'Rematched', #'Operational', #'Lattice',
 	'CreateDistn':		True,
 	'Space_Charge': 	False,
 	'GridSizeX': 128,

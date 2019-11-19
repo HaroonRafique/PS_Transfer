@@ -176,7 +176,7 @@ if sts['turn'] < 0:
 		if s['Optics'] is 'Lattice':
 			Dx  = Lattice.etax0
 			Dxp = Lattice.etapx0
-		elif s['Optics'] is 'Matched':
+		elif s['Optics'] is 'Operational':
 			Dx  = 2.633
 			Dxp = -0.1104
 		elif s['Optics'] is 'Rematched':
