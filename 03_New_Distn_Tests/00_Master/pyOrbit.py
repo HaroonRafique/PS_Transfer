@@ -185,7 +185,7 @@ if sts['turn'] < 0:
 
 
 		print '\n\t\tgenerate_initial_distribution on MPI process: ', rank
-		Particle_distribution_file = generate_initial_dispersion_vector_distribution(p, Lattice, 1E-3, Dx, Dxp, output_file='input/ParticleDistribution.in', summary_file='input/ParticleDistribution_summary.txt')
+		Particle_distribution_file = generate_initial_dispersion_vector_distribution(p, Lattice, 2E-3, Dx, Dxp, output_file='input/ParticleDistribution.in', summary_file='input/ParticleDistribution_summary.txt')
 
 		print '\n\t\tbunch_orbit_to_pyorbit on MPI process: ', rank
 		bunch_orbit_to_pyorbit(paramsDict["length"], kin_Energy, Particle_distribution_file, bunch, p['n_macroparticles'] + 1) #read in only first N_mp particles.
