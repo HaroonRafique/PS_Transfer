@@ -15,7 +15,7 @@ parameters['bunch_label'] 		= parameters['machine'] + '_Lattice_Tune_' + paramet
 parameters['flat_file']			= '../../00_Lattice_Setup/Optimised_Lattice/PTC-PyORBIT_flat_file.flt'
 parameters['tomo_file']			= 'PyORBIT_Tomo_file_MD4224_HB.mat'
 # ~ parameters['bunch_file']		= '../../01_Generate_Distn/Bunches/PyORBIT_Tomo_Bunch_Lattice_Twiss_Nmp_500_PS_Lattice_Tune_6218_624_BSG52.mat'
-parameters['bunch_file']		= '../../01_Generate_Distn/Bunches/PyORBIT_Tomo_Bunch_Manual_Twiss_Nmp_' + parameters['n_macroparticles']+'_PS_Lattice_Tune_6218_624_' + parameters['lattice_start']+'_'+parameters['Optics']+'.mat'
+parameters['bunch_file']		= '../../01_Generate_Distn/Bunches/PyORBIT_Tomo_Bunch_Manual_Twiss_Nmp_' + str(parameters['n_macroparticles'])+'_PS_Lattice_Tune_6218_624_' + parameters['lattice_start']+'_'+parameters['Optics']+'.mat'
 parameters['intensity']			= 65E+10
 parameters['macrosize']			= parameters['intensity']/float(parameters['n_macroparticles'])
 
@@ -41,7 +41,7 @@ parameters['beta'] 		= np.sqrt(parameters['gamma']**2-1)/parameters['gamma']
 c 						= 299792458
 parameters['sig_z'] 	= (parameters['beta'] * c * parameters['blength'])/4.
 
-parameters['turns_max'] = int(30)
+parameters['turns_max'] = int(40)
 parameters['turns_print'] = range(1, parameters['turns_max'])
 parameters['turns_update'] = range(1, parameters['turns_max'])
 
