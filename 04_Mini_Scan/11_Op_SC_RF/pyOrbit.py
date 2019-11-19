@@ -241,7 +241,7 @@ paramsDict["bunch"]= bunch
 if s['Space_Charge']:
 	print '\n\t\tAdding slice-by-slice space charge nodes on MPI process: ', rank
 	# Make a SC solver
-	calcsbs = SpaceChargeCalcSliceBySlice2D(s['GridSizeX'], s['GridSizeY'], s['GridSizeZ'], useLongitudinalKick=s['LongitudinalKick'])
+	calcsbs = SpaceChargeCalcSliceBySlice2D(s['GridSizeX'], s['GridSizeY'], s['GridSizeZ'], useLongitudinalKick=True)
 	sc_path_length_min = 1E-8
 	# Add the space charge solver to the lattice as child nodes
 	sc_nodes = scLatticeModifications.setSC2p5DAccNodes(Lattice, sc_path_length_min, calcsbs)
