@@ -954,7 +954,7 @@ def generate_initial_dispersion_vector_distribution(parameters, Lattice, dpp=2E-
 		parameters['etapx0']   = Lattice.etapx0
 	else:
 		parameters['etapx0']   = Dxp
-		
+
 	parameters['alphax0'] = Lattice.alphax0
 	parameters['betax0']  = Lattice.betax0
 	parameters['alphay0'] = Lattice.alphay0
@@ -998,12 +998,17 @@ def generate_initial_dispersion_vector_distribution(parameters, Lattice, dpp=2E-
 			step = fullrange/(parameters['n_macroparticles']-1)
 
 			for i in range(parameters['n_macroparticles']):
-				dE[i] = (i * step) - dpp
-				x[i] = closedOrbitx['x0'] + dispersionx['etax0'] * dE[i]
-				xp[i] = closedOrbitx['xp0'] + dispersionx['etapx0'] * dE[i]
+				delta_p_over_p = (i * step) - dpp
+
+				dE[i] = (parameters['energy']* 1E-9) * parameters['beta']**2 * delta_p_over_p 
+				x[i] = closedOrbitx['x0'] + dispersionx['etax0'] * delta_p_over_p
+				xp[i] = closedOrbitx['xp0'] + dispersionx['etapx0'] * delta_p_over_p
+
 				y[i] = closedOrbity['y0']
 				yp[i] = closedOrbity['yp0']
 				phi[i] = 0.
+				
+				# ~ print delta_p_over_p, dE[i], x[i], xp[i]
 				# ~ print x[i], dE[i]
 
 				if outputFormat == 'Orbit':
