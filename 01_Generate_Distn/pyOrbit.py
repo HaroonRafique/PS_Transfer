@@ -210,6 +210,7 @@ def Create_Bunch(Lattice, p=None, TwissDict=None, label=None, DistType = 'Gaussi
 def Analyse_Bunch(bunch, p, rank=0):
 
 	print '\n\t\tAnalyse_Bunch:: Analysing bunch:', p['bunch_label'] ,' of type ', p['DistType'] ,' on MPI process: ', rank
+	turn = -1
 	bunchtwissanalysis = BunchTwissAnalysis() # Prepare the bunch analysis class
 	get_dpp = lambda b, bta: np.sqrt(bta.getCorrelation(5,5)) / (b.getSyncParticle().gamma()*b.mass()*b.getSyncParticle().beta()**2)
 	get_bunch_length = lambda b, bta: 4 * np.sqrt(bta.getCorrelation(4,4)) / (speed_of_light*b.getSyncParticle().beta())
@@ -237,14 +238,65 @@ def Analyse_Bunch(bunch, p, rank=0):
 	output.addParameter('D_y', lambda: bunchtwissanalysis.getDispersion(1))
 	output.addParameter('bunchlength', lambda: get_bunch_length(bunch, bunchtwissanalysis))
 	output.addParameter('dpp_rms', lambda: get_dpp(bunch, bunchtwissanalysis))
-	output.addParameter('mu_x', lambda: GetBunchMus(bunch)[0])
-	output.addParameter('mu_y', lambda: GetBunchMus(bunch)[1])
 	output.addParameter('eff_beta_x', lambda: bunchtwissanalysis.getEffectiveBeta(0))
 	output.addParameter('eff_beta_y', lambda: bunchtwissanalysis.getEffectiveBeta(1))
 	output.addParameter('eff_epsn_x', lambda: bunchtwissanalysis.getEffectiveEmittance(0))
 	output.addParameter('eff_epsn_y', lambda: bunchtwissanalysis.getEffectiveEmittance(1))
 	output.addParameter('eff_alpha_x', lambda: bunchtwissanalysis.getEffectiveAlpha(0))
 	output.addParameter('eff_alpha_y', lambda: bunchtwissanalysis.getEffectiveAlpha(1))
+
+	moments = BunchGather(bunch, turn, p) # Calculate bunch moments and kurtosis
+
+	# Add moments and kurtosis
+	output.addParameter('sig_x', lambda: moments['Sig_x'])
+	output.addParameter('sig_xp', lambda: moments['Sig_xp'])
+	output.addParameter('sig_y', lambda: moments['Sig_y'])
+	output.addParameter('sig_yp', lambda: moments['Sig_yp'])
+	output.addParameter('sig_z', lambda: moments['Sig_z'])
+	output.addParameter('sig_dE', lambda: moments['Sig_dE'])
+
+	output.addParameter('mu_x', lambda: moments['Mu_x'])
+	output.addParameter('mu_xp', lambda: moments['Mu_xp'])
+	output.addParameter('mu_y', lambda: moments['Mu_y'])
+	output.addParameter('mu_yp', lambda: moments['Mu_yp'])
+	output.addParameter('mu_z', lambda: moments['Mu_z'])
+	output.addParameter('mu_dE', lambda: moments['Mu_dE'])
+
+	output.addParameter('min_x', lambda: moments['Min_x'])
+	output.addParameter('min_xp', lambda: moments['Min_xp'])
+	output.addParameter('min_y', lambda: moments['Min_y'])
+	output.addParameter('min_yp', lambda: moments['Min_yp'])
+	output.addParameter('min_z', lambda: moments['Min_z'])
+	output.addParameter('min_dE', lambda: moments['Min_dE'])
+
+	output.addParameter('max_x', lambda: moments['Max_x'])
+	output.addParameter('max_xp', lambda: moments['Max_xp'])
+	output.addParameter('max_y', lambda: moments['Max_y'])
+	output.addParameter('max_yp', lambda: moments['Max_yp'])
+	output.addParameter('max_z', lambda: moments['Max_z'])
+	output.addParameter('max_dE', lambda: moments['Max_dE'])
+
+	output.addParameter('kurtosis_x', lambda: moments['Kurtosis_x'])
+	output.addParameter('kurtosis_xp', lambda: moments['Kurtosis_xp'])
+	output.addParameter('kurtosis_y', lambda: moments['Kurtosis_y'])
+	output.addParameter('kurtosis_yp', lambda: moments['Kurtosis_yp'])
+	output.addParameter('kurtosis_z', lambda: moments['Kurtosis_z'])
+	output.addParameter('kurtosis_dE', lambda: moments['Kurtosis_dE'])
+
+	output.addParameter('kurtosis_x_6sig', lambda: moments['Kurtosis_x_6sig'])
+	output.addParameter('kurtosis_xp_6sig', lambda: moments['Kurtosis_xp_6sig'])
+	output.addParameter('kurtosis_y_6sig', lambda: moments['Kurtosis_y_6sig'])
+	output.addParameter('kurtosis_yp_6sig', lambda: moments['Kurtosis_yp_6sig'])
+	output.addParameter('kurtosis_z_6sig', lambda: moments['Kurtosis_z_6sig'])
+	output.addParameter('kurtosis_dE_6sig', lambda: moments['Kurtosis_dE_6sig'])
+
+	# PTC_Twiss must be updated before updating output
+	PTC_Twiss.UpdatePTCTwiss(Lattice, turn)
+
+	output.addParameter('orbit_x_min', lambda: PTC_Twiss.GetMinParameter('orbit_x', turn))
+	output.addParameter('orbit_x_max', lambda: PTC_Twiss.GetMaxParameter('orbit_x', turn))
+	output.addParameter('orbit_y_min', lambda: PTC_Twiss.GetMinParameter('orbit_y', turn))
+	output.addParameter('orbit_y_max', lambda: PTC_Twiss.GetMaxParameter('orbit_y', turn))
 
 	bunchtwissanalysis.analyzeBunch(bunch)
 
