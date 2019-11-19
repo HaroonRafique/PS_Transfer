@@ -511,15 +511,15 @@ TwissDict_ReM['length'] 			= Lattice.getLength()/Lattice.nHarm
 #	Finally we load output _analysis.mat file, and compare values to 
 #	the input parameters.
 
-tomo_bunch = Create_Bunch(Lattice, p, TwissDict=None, label=str(p['bunch_label']+'_Lattice'), DistType = 'Tomo', TwissType = 'Manual', rank=rank)
+tomo_bunch = Create_Bunch(Lattice, p, TwissDict=TwissDict, label=str(p['bunch_label']+'_Lattice'), DistType = 'Tomo', TwissType = 'Manual', rank=rank)
 tomo_analysis = Analyse_Bunch(tomo_bunch, p)
 Compare_Parameters(p, tomo_analysis)
 
-tomo_bunch_op = Create_Bunch(Lattice, p, TwissDict=None, label=str(p['bunch_label']+'_Op'), DistType = 'Tomo', TwissType = 'Manual', rank=rank)
+tomo_bunch_op = Create_Bunch(Lattice, p, TwissDict=TwissDict_op, label=str(p['bunch_label']+'_Op'), DistType = 'Tomo', TwissType = 'Manual', rank=rank)
 tomo_analysis_op = Analyse_Bunch(tomo_bunch_op, p)
 Compare_Parameters(p, tomo_analysis_op)
 
-tomo_bunch_ReM = Create_Bunch(Lattice, p, TwissDict=None, label=str(p['bunch_label']+'_ReM'), DistType = 'Tomo', TwissType = 'Manual', rank=rank)
+tomo_bunch_ReM = Create_Bunch(Lattice, p, TwissDict=TwissDict_ReM, label=str(p['bunch_label']+'_ReM'), DistType = 'Tomo', TwissType = 'Manual', rank=rank)
 tomo_analysis_ReM = Analyse_Bunch(tomo_bunch_ReM, p)
 Compare_Parameters(p, tomo_analysis_ReM)
 
