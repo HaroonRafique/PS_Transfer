@@ -48,10 +48,13 @@ from spacecharge import SpaceChargeCalcAnalyticGaussian
 from spacecharge import InterpolatedLineDensityProfile
 
 from lib.output_dictionary import *
-from lib.pyOrbit_GenerateInitialDistribution import *
 from lib.save_bunch_as_matfile import *
-from lib.pyOrbit_Tunespread_Calculator import *
 from lib.suppress_stdout import suppress_STDOUT
+from lib.pyOrbit_Bunch_Gather import *
+from lib.pyOrbit_Tunespread_Calculator import *
+from lib.pyOrbit_GenerateInitialDistribution import *
+from lib.pyOrbit_PrintLatticeFunctionsFromPTC import *
+from lib.pyOrbit_PTCLatticeFunctionsDictionary import *
 readScriptPTC_noSTDOUT = suppress_STDOUT(readScriptPTC)
 
 # MPI stuff
@@ -59,6 +62,15 @@ readScriptPTC_noSTDOUT = suppress_STDOUT(readScriptPTC)
 comm = orbit_mpi.mpi_comm.MPI_COMM_WORLD
 rank = orbit_mpi.MPI_Comm_rank(comm)
 print '\n\tStart PyORBIT simulation on MPI process: ', rank
+
+# Lattice function dictionary to print closed orbit
+#-----------------------------------------------------------------------
+ptc_dictionary_file = 'input/ptc_dictionary.pkl'
+if not os.path.exists(ptc_dictionary_file):        
+	PTC_Twiss = PTCLatticeFunctionsDictionary()
+else:
+	with open(ptc_dictionary_file) as sid:
+		PTC_Twiss = pickle.load(sid)
 
 # Function to check that a file isn't empty (common PTC file bug)
 def is_non_zero_file(fpath):  
@@ -84,43 +96,6 @@ def GetTunesFromPTC():
 		Qy = (float(first_line.split()[3]))
 	os.system('rm TWISS_PTC_table.OUT')
 	return Qx, Qy
-
-# Function to return second moment (mu^2) of distribution
-def GetBunchMus(b, smooth=True):
-	window = 40
-
-	# MPI stuff to run on a single node
-	rank = 0
-	numprocs = 1
-
-	mpi_init = orbit_mpi.MPI_Initialized()
-	comm = orbit_mpi.mpi_comm.MPI_COMM_WORLD
-	orbit_mpi.MPI_Barrier(comm)
-
-	if(mpi_init):
-		rank = orbit_mpi.MPI_Comm_rank(comm)
-		numprocs = orbit_mpi.MPI_Comm_size(comm)
-
-	nparts_arr_local = []
-	for i in range(numprocs):
-		nparts_arr_local.append(0)
-
-	nparts_arr_local[rank] = b.getSize()
-	data_type = mpi_datatype.MPI_INT
-	op = mpi_op.MPI_SUM
-
-	nparts_arr = orbit_mpi.MPI_Allreduce(nparts_arr_local,data_type,op,comm)
-
-# Arrays to hold x and y data
-	x = []
-	y = []
-
-	for i in range(b.getSize()):
-		x.append(b.x(i))
-		y.append(b.y(i))
-
-# Calculate moments of the bunch
-	return moment(x, 2), moment(y, 2)
 
 # Function to return a bunch from some input parameters
 def Create_Bunch(Lattice, p=None, TwissDict=None, label=None, DistType = 'Gaussian', TwissType = 'Lattice', rank=0):
@@ -400,22 +375,21 @@ p['LongitudinalCut'] = 2.4
 #################			TWISS DICTIONARY			################
 ########################################################################
 
-TwissDict = dict()	# Dictionary used to set initial TWISS parameters
-twissdict = None	# switch used to select vertical or horizontal scan data
+# ~ twissdict = None	# switch used to select vertical or horizontal scan data
 
-if float(p['tunex'])/100. is not 6.21:
-	twissdict = 'H'
-elif float(p['tuney'])/100. is not 6.24:
-	twissdict = 'V'
-else: 
-	print '\n\t Tune set to nominal value of ', (float(p['tunex'])/100.), ',', (float(p['tunex'])/100.)
-	if p['lattice_start'][3] is 'H':
-		twissdict = 'H'
-	elif p['lattice_start'][3] is 'V':
-		twissdict = 'V'
-	else: 
-		print '\n\t Error:: Start position not recognised, options are BWSH65 or BWSV64'
-		exit(0)
+# ~ if float(p['tunex'])/100. is not 6.21:
+	# ~ twissdict = 'H'
+# ~ elif float(p['tuney'])/100. is not 6.24:
+	# ~ twissdict = 'V'
+# ~ else: 
+	# ~ print '\n\t Tune set to nominal value of ', (float(p['tunex'])/100.), ',', (float(p['tunex'])/100.)
+	# ~ if p['lattice_start'][3] is 'H':
+		# ~ twissdict = 'H'
+	# ~ elif p['lattice_start'][3] is 'V':
+		# ~ twissdict = 'V'
+	# ~ else: 
+		# ~ print '\n\t Error:: Start position not recognised, options are BWSH65 or BWSV64'
+		# ~ exit(0)
 
 # ~ if twissdict is 'H':
 	# ~ Qx = [6.07, 6.08, 6.09, 6.1, 6.11, 6.12, 6.13, 6.14, 6.15, 6.16, 6.17, 6.18, 6.19, 6.2, 6.21]
@@ -479,23 +453,68 @@ else:
 
 	# ~ index = Qy.index(float(p['tuney'])/100)
 
-	# ~ TwissDict['alpha_x'] 			= alpha_x[index]
-	# ~ TwissDict['alpha_y'] 			= alpha_y[index]
-	# ~ TwissDict['beta_x'] 			= beta_x[index]
-	# ~ TwissDict['beta_y'] 			= beta_y[index]
-	# ~ TwissDict['D_x'] 				= D_x[index]
-	# ~ TwissDict['D_y'] 				= D_y[index]
-	# ~ TwissDict['D_xp'] 				= 0.
-	# ~ TwissDict['D_yp'] 				= 0.
-	# ~ TwissDict['x0'] 				= 0.
-	# ~ TwissDict['xp0'] 				= 0.
-	# ~ TwissDict['y0'] 				= 0.
-	# ~ TwissDict['yp0'] 				= 0.
+Dx = 0.
+Dxp = 0.
+if s['Optics'] is 'Lattice':
+	Dx  = Lattice.etax0
+	Dxp = Lattice.etapx0
+elif s['Optics'] is 'Operational':
+	Dx  = 2.633
+	Dxp = -0.1104
+elif s['Optics'] is 'Rematched':
+	Dx  = 2.6829
+	Dxp = -0.0221
 
-
+TwissDict = dict()	# Dictionary used to set initial TWISS parameters
+TwissDict['alphax0'] = Lattice.alphax0
+TwissDict['betax0']  = Lattice.betax0
+TwissDict['alphay0'] = Lattice.alphay0
+TwissDict['betay0']  = Lattice.betay0
+TwissDict['etax0']   = Lattice.etax0
+TwissDict['etapx0']  = Lattice.etapx0
+TwissDict['etay0']   = Lattice.etay0
+TwissDict['etapy0']  = Lattice.etapy0
+TwissDict['x0']      = Lattice.orbitx0
+TwissDict['xp0']     = Lattice.orbitpx0
+TwissDict['y0']      = Lattice.orbity0
+TwissDict['yp0']     = Lattice.orbitpy0
 TwissDict['gamma_transition']	= Lattice.gammaT
 TwissDict['circumference']		= Lattice.getLength()
 TwissDict['length'] 			= Lattice.getLength()/Lattice.nHarm
+
+TwissDict_op = dict()	# Dictionary used to set initial TWISS parameters
+TwissDict_op['alphax0'] = Lattice.alphax0
+TwissDict_op['betax0']  = Lattice.betax0
+TwissDict_op['alphay0'] = Lattice.alphay0
+TwissDict_op['betay0']  = Lattice.betay0
+TwissDict_op['etax0']   = 2.633
+TwissDict_op['etapx0']  = -0.1104
+TwissDict_op['etay0']   = Lattice.etay0
+TwissDict_op['etapy0']  = Lattice.etapy0
+TwissDict_op['x0']      = Lattice.orbitx0
+TwissDict_op['xp0']     = Lattice.orbitpx0
+TwissDict_op['y0']      = Lattice.orbity0
+TwissDict_op['yp0']     = Lattice.orbitpy0
+TwissDict_op['gamma_transition']	= Lattice.gammaT
+TwissDict_op['circumference']		= Lattice.getLength()
+TwissDict_op['length'] 			= Lattice.getLength()/Lattice.nHarm
+
+TwissDict_ReM = dict()	# Dictionary used to set initial TWISS parameters
+TwissDict_ReM['alphax0'] = Lattice.alphax0
+TwissDict_ReM['betax0']  = Lattice.betax0
+TwissDict_ReM['alphay0'] = Lattice.alphay0
+TwissDict_ReM['betay0']  = Lattice.betay0
+TwissDict_ReM['etax0']   = 2.6829
+TwissDict_ReM['etapx0']  = -0.0221
+TwissDict_ReM['etay0']   = Lattice.etay0
+TwissDict_ReM['etapy0']  = Lattice.etapy0
+TwissDict_ReM['x0']      = Lattice.orbitx0
+TwissDict_ReM['xp0']     = Lattice.orbitpx0
+TwissDict_ReM['y0']      = Lattice.orbity0
+TwissDict_ReM['yp0']     = Lattice.orbitpy0
+TwissDict_ReM['gamma_transition']	= Lattice.gammaT
+TwissDict_ReM['circumference']		= Lattice.getLength()
+TwissDict_ReM['length'] 			= Lattice.getLength()/Lattice.nHarm
 
 #	First we create the bunch using the Create_Bunch function which 
 #	creates the _summary.txt, .in, and bunch .mat file.
@@ -504,17 +523,17 @@ TwissDict['length'] 			= Lattice.getLength()/Lattice.nHarm
 #	Finally we load output _analysis.mat file, and compare values to 
 #	the input parameters.
 
-gaussian_bunch = Create_Bunch(Lattice, p, TwissDict=None, label=p['bunch_label'], DistType = 'Gaussian', TwissType = 'Lattice', rank=rank)
-gaussian_analysis = Analyse_Bunch(gaussian_bunch, p)
-Compare_Parameters(p, gaussian_analysis)
-
-joho_bunch = Create_Bunch(Lattice, p, TwissDict=None, label=p['bunch_label'], DistType = 'Joho', TwissType = 'Lattice', rank=rank)
-joho_analysis = Analyse_Bunch(joho_bunch, p)
-Compare_Parameters(p, joho_analysis)
-
-tomo_bunch = Create_Bunch(Lattice, p, TwissDict=None, label=p['bunch_label'], DistType = 'Tomo', TwissType = 'Lattice', rank=rank)
+tomo_bunch = Create_Bunch(Lattice, p, TwissDict=None, label=str(p['bunch_label']+'_Lattice'), DistType = 'Tomo', TwissType = 'Manual', rank=rank)
 tomo_analysis = Analyse_Bunch(tomo_bunch, p)
 Compare_Parameters(p, tomo_analysis)
+
+tomo_bunch_op = Create_Bunch(Lattice, p, TwissDict=None, label=str(p['bunch_label']+'_Op'), DistType = 'Tomo', TwissType = 'Manual', rank=rank)
+tomo_analysis_op = Analyse_Bunch(tomo_bunch_op, p)
+Compare_Parameters(p, tomo_analysis_op)
+
+tomo_bunch_ReM = Create_Bunch(Lattice, p, TwissDict=None, label=str(p['bunch_label']+'_ReM'), DistType = 'Tomo', TwissType = 'Manual', rank=rank)
+tomo_analysis_ReM = Analyse_Bunch(tomo_bunch_ReM, p)
+Compare_Parameters(p, tomo_analysis_ReM)
 
 # ~ gaussian_mt_bunch = Create_Bunch(Lattice, p, TwissDict=TwissDict, label=p['bunch_label'], DistType = 'Gaussian', TwissType = 'Manual', rank=rank)
 # ~ gaussian_mt_analysis = Analyse_Bunch(gaussian_mt_bunch, p)
