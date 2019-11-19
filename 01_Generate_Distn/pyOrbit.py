@@ -453,18 +453,6 @@ p['LongitudinalCut'] = 2.4
 
 	# ~ index = Qy.index(float(p['tuney'])/100)
 
-Dx = 0.
-Dxp = 0.
-if s['Optics'] is 'Lattice':
-	Dx  = Lattice.etax0
-	Dxp = Lattice.etapx0
-elif s['Optics'] is 'Operational':
-	Dx  = 2.633
-	Dxp = -0.1104
-elif s['Optics'] is 'Rematched':
-	Dx  = 2.6829
-	Dxp = -0.0221
-
 TwissDict = dict()	# Dictionary used to set initial TWISS parameters
 TwissDict['alphax0'] = Lattice.alphax0
 TwissDict['betax0']  = Lattice.betax0
