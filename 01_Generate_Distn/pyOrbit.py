@@ -149,7 +149,7 @@ def Create_Bunch(Lattice, p=None, TwissDict=None, label=None, DistType = 'Gaussi
 	
 	p['macrosize']			= p['intensity']/float(p['n_macroparticles'])
 
-	p['bunch_save_name'] = 'PyORBIT_'+DistType+'_Bunch_'+TwissType+'_Twiss_Nmp_' + str(p['n_macroparticles']) + '_' + p['bunch_label']
+	p['bunch_save_name'] = 'PyORBIT_'+DistType+'_Bunch_'+TwissType+'_Twiss_Nmp_' + str(p['n_macroparticles']) + '_' + label
 
 	if TwissType is 'Lattice':
 		
