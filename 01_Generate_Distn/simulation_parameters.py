@@ -2,7 +2,7 @@ import numpy as np
 
 parameters = {}
 
-parameters['n_macroparticles']		= int(5E4) #int(5E5)
+parameters['n_macroparticles']		= int(5E5) #int(5E4)
 
 # Include machine (PS), tunes, lattice start position (BWS65H) for bunch output file label
 parameters['tunex']					= '6218'
