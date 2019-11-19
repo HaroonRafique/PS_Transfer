@@ -1001,8 +1001,8 @@ def generate_initial_dispersion_vector_distribution(parameters, Lattice, dpp=1E-
 				delta_p_over_p = (i * step) - dpp
 
 				dE[i] = (parameters['energy']* 1E-9) * parameters['beta']**2 * delta_p_over_p 
-				x[i] = closedOrbitx['x0'] + dispersionx['etax0'] * dE[i]
-				xp[i] = closedOrbitx['xp0'] + dispersionx['etapx0'] * dE[i]
+				x[i] = closedOrbitx['x0'] + dispersionx['etax0'] * delta_p_over_p
+				xp[i] = closedOrbitx['xp0'] + dispersionx['etapx0'] * delta_p_over_p
 
 				y[i] = closedOrbity['y0']
 				yp[i] = closedOrbity['yp0']
