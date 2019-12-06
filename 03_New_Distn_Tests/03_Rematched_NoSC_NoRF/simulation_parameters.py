@@ -40,8 +40,13 @@ c 						= 299792458
 parameters['sig_z'] 	= (parameters['beta'] * c * parameters['blength'])/4.
 
 parameters['turns_max'] = int(30)
+<<<<<<< HEAD
 parameters['turns_print'] = range(0, parameters['turns_max'])
 parameters['turns_update'] = range(0, parameters['turns_max'])
+=======
+parameters['turns_print'] = range(0, parameters['turns_max']+1)
+parameters['turns_update'] = range(0, parameters['turns_max']+1)
+>>>>>>> dbdea9447f4cf284b043ac964076cca9de41191e
 
 switches = {
 	'Optics':		'Rematched', #'Operational', #'Lattice',
