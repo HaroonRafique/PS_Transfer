@@ -42,8 +42,8 @@ c 						= 299792458
 parameters['sig_z'] 	= (parameters['beta'] * c * parameters['blength'])/4.
 
 parameters['turns_max'] = int(40)
-parameters['turns_print'] = range(1, parameters['turns_max'])
-parameters['turns_update'] = range(1, parameters['turns_max'])
+parameters['turns_print'] = range(0, parameters['turns_max'])
+parameters['turns_update'] = range(0, parameters['turns_max'])
 
 switches = {
 	'CreateDistn':		False,	# True will create dispersion vector
