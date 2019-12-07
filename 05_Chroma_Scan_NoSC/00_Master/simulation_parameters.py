@@ -5,7 +5,7 @@ parameters = {}
 dps = [-3E-3, -2E-3, -1E-3, 0, 1E-3, 2E-3, 3E-3]
 
 parameters['dpp_rms']			= dps[6]
-parameters['x_offset']			= 50E-6 # 50 micron orbit offset to begin oscillation
+parameters['x_offset']			= 500E-6 # 500 micron orbit offset to begin oscillation
 
 parameters['n_macroparticles']	= int(5E4) # int(5E5)
 
@@ -14,7 +14,7 @@ parameters['tunex']				= '6218'
 parameters['tuney']				= '624'
 parameters['machine']			= 'PS'
 parameters['lattice_start'] 	= 'BSG52'
-parameters['Optics'] 			= 'Op' #'ReM' #'Lattice', #,
+parameters['Optics'] 			=  'Lattice' #'Op' #'ReM'
 
 parameters['bunch_label'] 		= parameters['machine'] + '_Lattice_Tune_' + parameters['tunex'] + '_' + parameters['tuney'] + '_' + parameters['lattice_start']
 parameters['flat_file']			= '../../00_Lattice_Setup/Optimised_Lattice/PTC-PyORBIT_flat_file.flt'
