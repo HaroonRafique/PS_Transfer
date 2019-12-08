@@ -5,7 +5,7 @@ parameters = {}
 dps = [-2.5E-3, -2E-3, -1.5E-3, -1E-3, -0.5E-3, 0, 0.5E-3, 1E-3, 1.5E-3, 2E-3, 2.5E-3]
 
 parameters['dpp_rms']			= dps[7]
-parameters['x_offset']			= 0.#50E-6 # 50 micron orbit offset to begin oscillation
+parameters['x_offset']			= 50E-6 # 50 micron orbit offset to begin oscillation
 
 parameters['n_macroparticles']	= int(5E4) # int(5E5)
 
@@ -23,7 +23,6 @@ parameters['bunch_file']		= '../../01_Generate_Distn/Bunches/PyORBIT_Tomo_Bunch_
 parameters['intensity']			= 65E+10
 parameters['macrosize']			= parameters['intensity']/float(parameters['n_macroparticles'])
 
-parameters['n_macroparticles']	= int(41)
 parameters['gamma']				= 2.49253731343
 parameters['bunch_length']		= 140e-9
 parameters['blength']			= 140e-9
