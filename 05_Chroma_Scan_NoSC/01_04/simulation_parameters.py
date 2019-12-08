@@ -2,7 +2,7 @@ import numpy as np
 
 parameters = {}
 
-dps = [-2.5E-3, -2E-3, -1E-3, 0, 1E-3, 2E-3, 2.5E-3]
+dps = [-2.5E-3, -2E-3, -1.5E-3, -1E-3, -0.5E-3, 0, 0.5E-3, 1E-3, 1.5E-3, 2E-3, 2.5E-3]
 
 parameters['dpp_rms']			= dps[3]
 parameters['x_offset']			= 0.#50E-6 # 50 micron orbit offset to begin oscillation
