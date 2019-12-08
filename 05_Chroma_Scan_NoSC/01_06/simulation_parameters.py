@@ -5,7 +5,7 @@ parameters = {}
 dps = [-3E-3, -2E-3, -1E-3, 0, 1E-3, 2E-3, 3E-3]
 
 parameters['dpp_rms']			= dps[5]
-parameters['x_offset']			= 50E-6 # 50 micron orbit offset to begin oscillation
+parameters['x_offset']			= 100E-6 # 50 micron orbit offset to begin oscillation
 
 parameters['n_macroparticles']	= int(5E4) # int(5E5)
 
