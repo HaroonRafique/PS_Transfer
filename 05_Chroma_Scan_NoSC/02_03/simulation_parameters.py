@@ -2,10 +2,10 @@ import numpy as np
 
 parameters = {}
 
-dps = [-3E-3, -2E-3, -1E-3, 0, 1E-3, 2E-3, 3E-3]
+dps = [-2.5E-3, -2E-3, -1.5E-3, -1E-3, -0.5E-3, 0, 0.5E-3, 1E-3, 1.5E-3, 2E-3, 2.5E-3]
 
 parameters['dpp_rms']			= dps[2]
-parameters['x_offset']			= 500E-6 # 500 micron orbit offset to begin oscillation
+parameters['x_offset']			= 0.#50E-6 # 50 micron orbit offset to begin oscillation
 
 parameters['n_macroparticles']	= int(5E4) # int(5E5)
 
@@ -14,7 +14,7 @@ parameters['tunex']				= '6218'
 parameters['tuney']				= '624'
 parameters['machine']			= 'PS'
 parameters['lattice_start'] 	= 'BSG52'
-parameters['Optics'] 			=  'Lattice' #'Op' #'ReM'
+parameters['Optics'] 			= 'Op' #'ReM' #'Lattice', #,
 
 parameters['bunch_label'] 		= parameters['machine'] + '_Lattice_Tune_' + parameters['tunex'] + '_' + parameters['tuney'] + '_' + parameters['lattice_start']
 parameters['flat_file']			= '../../00_Lattice_Setup/Optimised_Lattice/PTC-PyORBIT_flat_file.flt'
@@ -23,7 +23,6 @@ parameters['bunch_file']		= '../../01_Generate_Distn/Bunches/PyORBIT_Tomo_Bunch_
 parameters['intensity']			= 65E+10
 parameters['macrosize']			= parameters['intensity']/float(parameters['n_macroparticles'])
 
-parameters['n_macroparticles']	= int(41)
 parameters['gamma']				= 2.49253731343
 parameters['bunch_length']		= 140e-9
 parameters['blength']			= 140e-9

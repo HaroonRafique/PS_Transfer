@@ -194,7 +194,7 @@ if sts['turn'] < 0:
 		twiss_dict['D_yp'] 				= Lattice.etapy0
 		twiss_dict['x0'] 				= Lattice.orbitx0 + p['x_offset']
 		twiss_dict['xp0'] 				= Lattice.orbitpx0
-		twiss_dict['y0'] 				= Lattice.orbity0
+		twiss_dict['y0'] 				= Lattice.orbity0 + p['x_offset']
 		twiss_dict['yp0'] 				= Lattice.orbitpy0
 		twiss_dict['gamma_transition'] 	= Lattice.gammaT
 		twiss_dict['circumference']    	= Lattice.getLength()
