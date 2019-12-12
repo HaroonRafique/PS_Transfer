@@ -9,7 +9,7 @@ parameters['tunex']					= '6218'
 parameters['tuney']					= '624'
 parameters['machine']				= 'PS'
 parameters['lattice_start'] 		= 'BSG52'
-parameters['Optics'] 		= 'ReM' #'Op', #'Lattice',
+parameters['Optics'] 		= 'Lattice' #'Op', #'ReM',
 
 parameters['bunch_label'] 		= parameters['machine'] + '_Lattice_Tune_' + parameters['tunex'] + '_' + parameters['tuney'] + '_' + parameters['lattice_start']
 parameters['flat_file']			= '../../00_Lattice_Setup/Optimised_Lattice/PTC-PyORBIT_flat_file.flt'

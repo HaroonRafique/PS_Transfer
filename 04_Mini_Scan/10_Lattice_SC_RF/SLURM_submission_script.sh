@@ -3,9 +3,9 @@
 #SBATCH --output=slurm.%N.%j.out
 #SBATCH --error=slurm.%N.%j.err
 #SBATCH --nodes=2
-#SBATCH --ntasks-per-node=20
-#SBATCH --partition=inf-short
-#SBATCH --time=120:00:00
+#SBATCH --ntasks-per-node=16
+#SBATCH --partition=batch-short
+#SBATCH --time=48:00:00
 #SBATCH --mem-per-cpu=3200M
 #SBATCH --exclusive
 #SBATCH --hint=nomultithread
