@@ -19,7 +19,7 @@ clean_all = True		# Clean simulation folder before running (False when resuming 
 # Must be chosen
 
 # ~ queue = 'inf-long', 'inf-short', 'batch-long', 'batch-short'
-queue = 'inf-short'
+queue = 'batch-short'
 
 n_nodes = 2 
 
