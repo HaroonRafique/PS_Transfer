@@ -19,7 +19,6 @@ parameters['bunch_file']		= '../../01_Generate_Distn/Bunches/PyORBIT_Tomo_Bunch_
 parameters['intensity']			= 65E+10
 parameters['macrosize']			= parameters['intensity']/float(parameters['n_macroparticles'])
 
-parameters['n_macroparticles']	= int(41)
 parameters['gamma']				= 2.49253731343
 parameters['bunch_length']		= 140e-9
 parameters['blength']			= 140e-9
@@ -42,8 +41,8 @@ c 						= 299792458
 parameters['sig_z'] 	= (parameters['beta'] * c * parameters['blength'])/4.
 
 parameters['turns_max'] = int(40)
-parameters['turns_print'] = range(1, parameters['turns_max'])
-parameters['turns_update'] = range(1, parameters['turns_max'])
+parameters['turns_print'] = range(0, parameters['turns_max'])
+parameters['turns_update'] = range(0, parameters['turns_max'])
 
 switches = {
 	'CreateDistn':		False,	# True will create dispersion vector
@@ -58,8 +57,7 @@ harmonic_factors = [1] # this times the base harmonic defines the RF harmonics (
 time = np.array([0,1,2])
 ones = np.ones_like(time)
 Ekin_GeV = 1.4*ones
-RF_voltage_MV = np.array([0.0212942055190595723*ones]).T # in MV
-# ~ RF_voltage_MV = np.array([0.0*ones]).T # in MV
+RF_voltage_MV = np.array([parameters['rf_voltage']*ones]).T # in MV
 RF_phase = np.array([np.pi*ones]).T
 
 RFparameters = {

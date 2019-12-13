@@ -9,7 +9,7 @@ parameters['tunex']					= '6218'
 parameters['tuney']					= '624'
 parameters['machine']				= 'PS'
 parameters['lattice_start'] 		= 'BSG52'
-parameters['Optics'] 		= 'Lattice' #'ReM', #'Op',
+parameters['Optics'] 		= 'Op' #'ReM', #'Lattice',
 
 parameters['bunch_label'] 		= parameters['machine'] + '_Lattice_Tune_' + parameters['tunex'] + '_' + parameters['tuney'] + '_' + parameters['lattice_start']
 parameters['flat_file']			= '../../00_Lattice_Setup/Optimised_Lattice/PTC-PyORBIT_flat_file.flt'
@@ -28,8 +28,8 @@ parameters['dpp_rms']			= 9e-04
 parameters['LongitudinalJohoParameter'] = 1.2
 parameters['LongitudinalCut'] 	= 2.4
 parameters['TransverseCut']		= 5
-parameters['rf_voltage']		= 0.0212942055190595723
-# ~ parameters['rf_voltage']		= 0.0
+# ~ parameters['rf_voltage']		= 0.0212942055190595723
+parameters['rf_voltage']		= 0.0
 parameters['circumference']		= 2*np.pi*100
 parameters['phi_s']				= 0
 parameters['macrosize']			= parameters['intensity']/float(parameters['n_macroparticles'])
@@ -46,7 +46,7 @@ parameters['turns_update'] = range(0, parameters['turns_max'])
 
 switches = {
 	'CreateDistn':		False,	# True will create dispersion vector
-	'Space_Charge': 	False,
+	'Space_Charge': 	True,
 	'GridSizeX': 64,
 	'GridSizeY': 64,
 	'GridSizeZ': 32
