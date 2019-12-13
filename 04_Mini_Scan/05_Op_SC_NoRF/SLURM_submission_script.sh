@@ -3,15 +3,15 @@
 #SBATCH --output=slurm.%N.%j.out
 #SBATCH --error=slurm.%N.%j.err
 #SBATCH --nodes=2
-#SBATCH --ntasks-per-node=20
-#SBATCH --partition=inf-short
-#SBATCH --time=120:00:00
+#SBATCH --ntasks-per-node=16
+#SBATCH --partition=batch-long
+#SBATCH --time=504:00:00
 #SBATCH --mem-per-cpu=3200M
 #SBATCH --exclusive
 #SBATCH --hint=nomultithread
 
 BATCH_ROOT_DIR=/hpcscratch/user/harafiqu
-RUN_DIR=/hpcscratch/user/harafiqu/PS_Transfer/04_Mini_Scan/05_ReM_SC_NoRF
+RUN_DIR=/hpcscratch/user/harafiqu/PS_Transfer/04_Mini_Scan/05_Op_SC_NoRF
 OrigIwd=$(pwd)
 
 # Make an output folder in the root directory to hold SLURM info file
