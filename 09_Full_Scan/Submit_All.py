@@ -5,17 +5,11 @@ master_dir = os.getcwd()
 locations = []
 
 locations.append('/01_Lattice_NoSC_NoRF')
-locations.append('/02_Op_NoSC_NoRF')
-locations.append('/03_ReM_NoSC_NoRF')
-locations.append('/04_Lattice_SC_NoRF')
-locations.append('/05_Op_SC_NoRF')
-locations.append('/06_ReM_SC_NoRF')
-locations.append('/07_Lattice_NoSC_RF')
-locations.append('/08_Op_NoSC_RF')
-locations.append('/09_ReM_NoSC_RF')
-locations.append('/10_Lattice_SC_RF')
-locations.append('/11_Op_SC_RF')
-locations.append('/12_ReM_SC_RF')
+locations.append('/01_Op_NoSC_NoRF')
+locations.append('/01_ReM_NoSC_NoRF')
+locations.append('/02_Lattice_SC_RF')
+locations.append('/02_Op_SC_RF')
+locations.append('/02_ReM_SC_RF')
 
 for loc in locations:
 	print '--------------------------------------------------------------------------------------------'
