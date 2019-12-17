@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=04_11
+#SBATCH --job-name=09_02_02
 #SBATCH --output=slurm.%N.%j.out
 #SBATCH --error=slurm.%N.%j.err
 #SBATCH --nodes=2
@@ -11,7 +11,7 @@
 #SBATCH --hint=nomultithread
 
 BATCH_ROOT_DIR=/hpcscratch/user/harafiqu
-RUN_DIR=/hpcscratch/user/harafiqu/PS_Transfer/04_Mini_Scan/11_Op_SC_RF
+RUN_DIR=/hpcscratch/user/harafiqu/PS_Transfer/09_Full_Scan/02_Op_SC_RF
 OrigIwd=$(pwd)
 
 # Make an output folder in the root directory to hold SLURM info file
