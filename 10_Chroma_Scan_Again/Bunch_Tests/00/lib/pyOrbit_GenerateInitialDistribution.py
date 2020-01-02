@@ -15,6 +15,13 @@ from orbit.utils.consts import mass_proton, speed_of_light, pi
 from orbit.utils.orbit_mpi_utils import bunch_orbit_to_pyorbit, bunch_pyorbit_to_orbit
 from orbit.bunch_utils import ParticleIdNumber
 
+def dpp_from_dE(dE, beta = 0.915839281848, E=2336654575.29):
+	return (dE / (E*1E-9 * beta**2))
+
+def dE_from_dpp(dpp, beta = 0.915839281848, E=2336654575.29):
+	return (dpp * E*1E-9 * beta**2)
+
+
 class LongitudinalDistributionFromTomoscope():
 
 	def __init__(self, filename, matfile=0):
@@ -280,8 +287,7 @@ def generate_initial_distribution_synch_particle_manual_Twiss(parameters, TwissD
 				xp[i] *= 1000.
 				y[i] *= 1000.
 				yp[i] *= 1000.
-				
-				dE[i] = parameters['dpp_rms']
+				dE[i] =  dE_from_dpp(parameters['dpp_rms'], parameters['beta'], parameters['energy']):
 				z[i] = 0.
 
 			map(lambda i: csv_writer.writerow([x[i], xp[i], y[i], yp[i], phi[i], dE[i]]), range(parameters['n_macroparticles']))	
