@@ -287,7 +287,7 @@ def generate_initial_distribution_synch_particle_manual_Twiss(parameters, TwissD
 				xp[i] *= 1000.
 				y[i] *= 1000.
 				yp[i] *= 1000.
-				dE[i] =  dE_from_dpp(parameters['dpp_rms'], parameters['beta'], parameters['energy']):
+				dE[i] =  dE_from_dpp(parameters['dpp_rms'], parameters['beta'], parameters['energy'])
 				z[i] = 0.
 
 			map(lambda i: csv_writer.writerow([x[i], xp[i], y[i], yp[i], phi[i], dE[i]]), range(parameters['n_macroparticles']))	
