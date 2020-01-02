@@ -162,6 +162,7 @@ if sts['turn'] < 0:
 	p['energy']          = 1e9 * bunch.mass() * bunch.getSyncParticle().gamma()
 	# ~ p['bunch_length'] = p['sig_z']/speed_of_light/bunch.getSyncParticle().beta()*4
 	p['bunch_length'] = p['bunch_length']
+	p['particle_mass'] = bunch.mass()
 	kin_Energy = bunch.getSyncParticle().kinEnergy()
 
 	print '\n\t\tOutput simulation_parameters on MPI process: ', rank

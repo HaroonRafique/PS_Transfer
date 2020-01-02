@@ -11,7 +11,7 @@ parameters = {}
 parameters['dpp_rms']			= dps[digits-1]
 parameters['x_offset']			= 100E-6 # 0 micron orbit offset to begin oscillation
 
-parameters['n_macroparticles']	= int(1E5) # int(5E5)
+parameters['n_macroparticles']	= int(5E4) # int(5E5)
 
 # Include machine (PS), tunes, lattice start position (BWS65H) for bunch output file label
 parameters['tunex']				= '6218'
@@ -21,9 +21,9 @@ parameters['lattice_start'] 	= 'BSG52'
 parameters['Optics'] 			= 'Op' #'ReM' #'Lattice', #,
 
 parameters['bunch_label'] 		= parameters['machine'] + '_Lattice_Tune_' + parameters['tunex'] + '_' + parameters['tuney'] + '_' + parameters['lattice_start']
-parameters['flat_file']			= '../../00_Lattice_Setup/Optimised_Lattice/PTC-PyORBIT_flat_file.flt'
+parameters['flat_file']			= '../../../00_Lattice_Setup/Optimised_Lattice/PTC-PyORBIT_flat_file.flt'
 parameters['tomo_file']			= 'PyORBIT_Tomo_file_BCMS_PreLIU.mat'
-parameters['bunch_file']		= '../../01_Generate_Distn/Bunches/PyORBIT_Tomo_Bunch_Manual_Twiss_Nmp_' + str(parameters['n_macroparticles'])+'_PS_Lattice_Tune_6218_624_' + parameters['lattice_start']+'_'+parameters['Optics']+'.mat'
+parameters['bunch_file']		= '../../../01_Generate_Distn/Bunches/PyORBIT_Tomo_Bunch_Manual_Twiss_Nmp_' + str(parameters['n_macroparticles'])+'_PS_Lattice_Tune_6218_624_' + parameters['lattice_start']+'_'+parameters['Optics']+'.mat'
 parameters['intensity']			= 65E+10
 parameters['macrosize']			= parameters['intensity']/float(parameters['n_macroparticles'])
 
