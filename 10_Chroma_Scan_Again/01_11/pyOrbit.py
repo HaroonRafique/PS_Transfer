@@ -162,6 +162,7 @@ if sts['turn'] < 0:
 	p['energy']          = 1e9 * bunch.mass() * bunch.getSyncParticle().gamma()
 	# ~ p['bunch_length'] = p['sig_z']/speed_of_light/bunch.getSyncParticle().beta()*4
 	p['bunch_length'] = p['bunch_length']
+	p['particle_mass'] = bunch.mass()
 	kin_Energy = bunch.getSyncParticle().kinEnergy()
 
 	print '\n\t\tOutput simulation_parameters on MPI process: ', rank
@@ -202,7 +203,8 @@ if sts['turn'] < 0:
 
 		print '\n\t\tgenerate_initial_distribution on MPI process: ', rank
 		# ~ Particle_distribution_file = generate_initial_dispersion_vector_distribution(p, Lattice, 2E-3, Dx, Dxp, output_file='input/ParticleDistribution.in', summary_file='input/ParticleDistribution_summary.txt')
-		Particle_distribution_file = generate_initial_distribution_from_tomo_manual_Twiss(p, twiss_dict, 1, output_file='input/ParticleDistribution.in', summary_file='input/ParticleDistribution_summary.txt')
+		# ~ Particle_distribution_file = generate_initial_distribution_from_tomo_manual_Twiss(p, twiss_dict, 1, output_file='input/ParticleDistribution.in', summary_file='input/ParticleDistribution_summary.txt')
+		Particle_distribution_file = generate_initial_distribution_synch_particle_manual_Twiss(p, twiss_dict, 1, output_file='input/ParticleDistribution.in', summary_file='input/ParticleDistribution_summary.txt')
 
 		print '\n\t\tbunch_orbit_to_pyorbit on MPI process: ', rank
 		bunch_orbit_to_pyorbit(paramsDict["length"], kin_Energy, Particle_distribution_file, bunch, p['n_macroparticles'] + 1) #read in only first N_mp particles.
