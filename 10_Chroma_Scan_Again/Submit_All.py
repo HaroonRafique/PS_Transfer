@@ -4,11 +4,11 @@ master_dir = os.getcwd()
 
 locations = []
 
-flag_1
-flag_2
-flag_3
-flag_4
-flag_5
+flag_1 = False
+flag_2 = False
+flag_3 = False
+flag_4 = True
+flag_5 = True
 
 if flag_1:
 	locations.append('/01_01')
