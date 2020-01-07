@@ -3,5 +3,5 @@ SELECTLAYOUT
 LMAX
 0.5
 PRINT FLAT FILE
-PTC-PyORBIT_flat_file.flt
+PTC-PyORBIT_flat_file_new.flt
 return
