@@ -1,17 +1,17 @@
 #!/bin/bash
-#SBATCH --job-name=09_01_00
+#SBATCH --job-name=12_01_00
 #SBATCH --output=slurm.%N.%j.out
 #SBATCH --error=slurm.%N.%j.err
 #SBATCH --nodes=2
-#SBATCH --ntasks-per-node=16
-#SBATCH --partition=batch-long
-#SBATCH --time=504:00:00
+#SBATCH --ntasks-per-node=20
+#SBATCH --partition=inf-short
+#SBATCH --time=120:00:00
 #SBATCH --mem-per-cpu=3200M
 #SBATCH --exclusive
 #SBATCH --hint=nomultithread
 
 BATCH_ROOT_DIR=/hpcscratch/user/harafiqu
-RUN_DIR=/hpcscratch/user/harafiqu/PS_Transfer/09_Full_Scan/01_Lattice_NoSC_NoRF
+RUN_DIR=/hpcscratch/user/harafiqu/PS_Transfer/12_Full_Scan_Profiles/01_Lattice_NoSC_NoRF
 OrigIwd=$(pwd)
 
 # Make an output folder in the root directory to hold SLURM info file
