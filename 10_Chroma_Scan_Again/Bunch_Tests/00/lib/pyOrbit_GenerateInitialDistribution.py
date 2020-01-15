@@ -232,7 +232,12 @@ def generate_initial_distribution_synch_particle_manual_Twiss(parameters, TwissD
 	closedOrbity = {'y0': parameters['y0'], 'yp0': parameters['yp0']} 
 
 	print '\n\t\tgenerate_initial_distribution_from_tomo_manual_Twiss::dispersionx = ', dispersionx 
-
+        # currently our bunch has dpp ~ 0.9E-3.
+        dp_offset = parameters['dpp_rms'] - 0.9E-3
+        print '\n\t\tdp_offset = ', dp_offset
+        de_offset = dE_from_dpp(dp_offset, parameters['beta'], parameters['energy'])
+        print '\n\t\tde_offset = ', de_offset
+        
 	# Initialize empty particle arrays
 	x = np.zeros(parameters['n_macroparticles'])
 	xp = np.zeros(parameters['n_macroparticles'])
@@ -262,11 +267,7 @@ def generate_initial_distribution_synch_particle_manual_Twiss(parameters, TwissD
 	# Write the distn to a file only on one CPU
 	comm = orbit_mpi.mpi_comm.MPI_COMM_WORLD
 	if orbit_mpi.MPI_Comm_rank(comm) == 0:
-                # currently our bunch has dpp ~ 0.9E-3.
-                dp_offset = parameters['dpp_rms'] - 0.9E-3
-                print dp_offset
-                de_offset = dE_from_dpp(dp_offset, parameters['beta'], parameters['energy'])
-                print de_offset
+
 
 		with open(output_file,"w") as fid:
 
