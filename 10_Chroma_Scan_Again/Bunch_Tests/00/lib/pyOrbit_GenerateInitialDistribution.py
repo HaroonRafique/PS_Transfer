@@ -262,6 +262,11 @@ def generate_initial_distribution_synch_particle_manual_Twiss(parameters, TwissD
 	# Write the distn to a file only on one CPU
 	comm = orbit_mpi.mpi_comm.MPI_COMM_WORLD
 	if orbit_mpi.MPI_Comm_rank(comm) == 0:
+                # currently our bunch has dpp ~ 0.9E-3.
+                dp_offset = parameters['dpp_rms'] - 0.9E-3
+                print dp_offset
+                de_offset = dE_from_dpp(dp_offset, parameters['beta'], parameters['energy'])
+                print de_offset
 
 		with open(output_file,"w") as fid:
 
@@ -287,9 +292,8 @@ def generate_initial_distribution_synch_particle_manual_Twiss(parameters, TwissD
 				xp[i] *= 1000.
 				y[i] *= 1000.
 				yp[i] *= 1000.
-                                # currently our bunch has dpp ~ 0.9E-3.
-                                dp_offset = parameters['dpp_rms'] - 0.9E-3
-				dE[i] +=  dE_from_dpp(dp_offset, parameters['beta'], parameters['energy'])
+
+				dE[i] = dE[i] + de_offset
 				z[i] = 0.
 
 			map(lambda i: csv_writer.writerow([x[i], xp[i], y[i], yp[i], phi[i], dE[i]]), range(parameters['n_macroparticles']))	

@@ -11,7 +11,7 @@ parameters = {}
 parameters['dpp_rms']			= dps[-1]
 parameters['x_offset']			= 100E-6 # 0 micron orbit offset to begin oscillation
 
-parameters['n_macroparticles']	= int(5E5) # int(5E5)
+parameters['n_macroparticles']	= int(5E3) # int(5E5)
 
 # Include machine (PS), tunes, lattice start position (BWS65H) for bunch output file label
 parameters['tunex']				= '6218'
