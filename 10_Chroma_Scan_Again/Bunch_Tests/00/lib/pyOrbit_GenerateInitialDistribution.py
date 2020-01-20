@@ -231,8 +231,14 @@ def generate_initial_distribution_synch_particle_manual_Twiss(parameters, TwissD
 	closedOrbitx = {'x0': parameters['x0'], 'xp0': parameters['xp0']} 
 	closedOrbity = {'y0': parameters['y0'], 'yp0': parameters['yp0']} 
 
-	print '\n\t\tgenerate_initial_distribution_from_tomo_manual_Twiss::dispersionx = ', dispersionx 
-
+	print '\n\t\generate_initial_distribution_synch_particle_manual_Twiss::dispersionx = ', dispersionx 
+        # currently our bunch has dpp ~ 0.9E-3.
+        print '\n\t\tdpp_rms = ', parameters['dpp_rms']
+        dp_offset = parameters['dpp_rms'] - 0.86E-3
+        print '\n\t\tdp_offset = ', dp_offset
+        de_offset = dE_from_dpp(dp_offset, parameters['beta'], parameters['energy'])
+        print '\n\t\tde_offset = ', de_offset
+        
 	# Initialize empty particle arrays
 	x = np.zeros(parameters['n_macroparticles'])
 	xp = np.zeros(parameters['n_macroparticles'])
@@ -263,6 +269,7 @@ def generate_initial_distribution_synch_particle_manual_Twiss(parameters, TwissD
 	comm = orbit_mpi.mpi_comm.MPI_COMM_WORLD
 	if orbit_mpi.MPI_Comm_rank(comm) == 0:
 
+
 		with open(output_file,"w") as fid:
 
 			csv_writer = csv.writer(fid, delimiter=' ')
@@ -287,8 +294,8 @@ def generate_initial_distribution_synch_particle_manual_Twiss(parameters, TwissD
 				xp[i] *= 1000.
 				y[i] *= 1000.
 				yp[i] *= 1000.
-				dE[i] =  dE_from_dpp(parameters['dpp_rms'], parameters['beta'], parameters['energy'])
-				z[i] = 0.
+
+				dE[i] = dE[i] + de_offset
 
 			map(lambda i: csv_writer.writerow([x[i], xp[i], y[i], yp[i], phi[i], dE[i]]), range(parameters['n_macroparticles']))	
 
