@@ -203,7 +203,7 @@ print '\n\tPLOTTING SCRIPT: TUNE AND DISTRIBUTION FOOTPRINTS FROM PTC-PYORBIT BU
 
 LIU = False
 
-TUNE = True
+TUNE = False
 XY = True
 XXP = True
 YYP = True
@@ -214,10 +214,10 @@ Y_Profile = True
 
 tune_tit = '(6.21, 6.245)'
 tune_sav = '6p21_6p245' 
-sc = 'SbS'
-main_label = 'PST'
+sc = 'NoSC_NoRF'
+main_label = 'Model'
 
-source_dir =  './bunch_output/'
+source_dir =  './01_Lattice_NoSC_NoRF/bunch_output/'
 save_folder = source_dir
 
 master_bins = 512
