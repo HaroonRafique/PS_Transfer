@@ -42,12 +42,20 @@ module load mpi/mvapich2/2.3
 tstart=$(date +%s)
 
 # Run the job
-srun --exclusive -n 1 ./01_Op_NoSC_NoRF/Plot_Tune_and_Distn_Footprints.py &
-srun --exclusive -n 1 ./01_ReM_NoSC_NoRF/Plot_Tune_and_Distn_Footprints.py &
-srun --exclusive -n 1 ./01_Lattice_NoSC_NoRF/Plot_Tune_and_Distn_Footprints.py &
-srun --exclusive -n 1 ./02_Lattice_NoSC_NoRF/Plot_Tune_and_Distn_Footprints.py &
-srun --exclusive -n 1 ./02_Lattice_NoSC_NoRF/Plot_Tune_and_Distn_Footprints.py &
-srun --exclusive -n 1 ./02_Lattice_NoSC_NoRF/Plot_Tune_and_Distn_Footprints.py &
+cd 01_Op_NoSC_NoRF
+
+srun --exclusive -n 1 ./Plot_Tune_and_Distn_Footprints.py &
+cd ../01_ReM_NoSC_NoRF
+srun --exclusive -n 1 ./Plot_Tune_and_Distn_Footprints.py &
+cd ../01_Lattice_NoSC_NoRF
+srun --exclusive -n 1 ./Plot_Tune_and_Distn_Footprints.py &
+cd ../02_Lattice_NoSC_NoRF
+srun --exclusive -n 1 ./Plot_Tune_and_Distn_Footprints.py &
+cd ../02_Lattice_NoSC_NoRF
+srun --exclusive -n 1 ./Plot_Tune_and_Distn_Footprints.py &
+cd ../02_Lattice_NoSC_NoRF
+srun --exclusive -n 1 ./Plot_Tune_and_Distn_Footprints.py &
+cd ..
 wait
 
 tend=$(date +%s)
