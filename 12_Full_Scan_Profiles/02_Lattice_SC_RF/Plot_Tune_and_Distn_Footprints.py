@@ -215,7 +215,7 @@ Y_Profile = True
 tune_tit = '(6.21, 6.245)'
 tune_sav = '6p21_6p245' 
 sc = 'SbS'
-main_label = 'Lattice'
+main_label = 'Model'
 
 source_dir =  './02_Lattice_SC_RF/bunch_output/'
 save_folder = source_dir
